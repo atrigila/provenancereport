@@ -4,6 +4,7 @@
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 include { paramsSummaryMap       } from 'plugin/nf-schema'
+include { QUARTONOTEBOOK        } from '../modules/nf-core/quartonotebook/main'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_provenancereport_pipeline'
 
@@ -22,6 +23,42 @@ workflow PROVENANCEREPORT {
     main:
 
     def ch_versions = channel.empty()
+    def report_notebook = file(params.notebook ?: "${projectDir}/assets/provenance_report.qmd", checkIfExists: true)
+
+    ch_quarto_input = ch_samplesheet
+        .collect(flat: false)
+        .multiMap { rows ->
+            def input_ids = rows.collect { meta, _input_file -> meta.id }
+            def input_files = rows.collect { _meta, input_file -> input_file }
+            def input_file_names = input_files.collect { input_file -> input_file.getName() }
+            def report_meta = [ id: report_notebook.baseName, report_file_name: report_notebook.baseName ]
+            notebook:
+            [
+                report_meta,
+                report_notebook,
+            ]
+
+            parameters:
+            [
+                input_dir: './',
+                input_ids: input_ids.join(','),
+                input_files: input_file_names.join(','),
+                input_file_count: input_file_names.size(),
+            ]
+
+            input_files:
+            input_files
+
+            extensions:
+            []
+        }
+
+    QUARTONOTEBOOK (
+        ch_quarto_input.notebook,
+        ch_quarto_input.parameters,
+        ch_quarto_input.input_files,
+        ch_quarto_input.extensions,
+    )
 
     //
     // Collate and save software versions
@@ -43,7 +80,7 @@ workflow PROVENANCEREPORT {
             "${process}:\n${tool_versions.join('\n')}"
         }
 
-    def ch_collated_versions = softwareVersionsToYAML(ch_versions.mix(topic_versions.versions_file))
+    softwareVersionsToYAML(ch_versions.mix(topic_versions.versions_file))
         .mix(topic_versions_string)
         .collectFile(
             storeDir: "${outdir}/pipeline_info",
@@ -53,6 +90,7 @@ workflow PROVENANCEREPORT {
         )
     emit:
     versions       = ch_versions                 // channel: [ path(versions.yml) ]
+    reports        = QUARTONOTEBOOK.out.html     // channel: [ val(meta), path(html) ]
 }
 
 /*

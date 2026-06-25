@@ -102,23 +102,13 @@ workflow PIPELINE_INITIALISATION {
     // Create channel from input file provided through params.input
     //
 
+    def samplesheet_dir = file(input).parent
+
     channel
         .fromList(samplesheetToList(input, "${projectDir}/assets/schema_input.json"))
-        .map {
-            meta, fastq_1, fastq_2 ->
-                if (!fastq_2) {
-                    return [ meta.id, meta + [ single_end:true ], [ fastq_1 ] ]
-                } else {
-                    return [ meta.id, meta + [ single_end:false ], [ fastq_1, fastq_2 ] ]
-                }
-        }
-        .groupTuple()
-        .map { samplesheet ->
-            validateInputSamplesheet(samplesheet)
-        }
-        .map {
-            meta, fastqs ->
-                return [ meta, fastqs.flatten() ]
+        .map { meta, input_path ->
+            def resolved_path = resolveSamplesheetPath(input_path, samplesheet_dir)
+            return [ meta, file(resolved_path, checkIfExists: true) ]
         }
         .set { ch_samplesheet }
 
@@ -176,20 +166,17 @@ workflow PIPELINE_COMPLETION {
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-//
-// Validate channels from input samplesheet
-//
-def validateInputSamplesheet(input) {
-    def (metas, fastqs) = input[1..2]
-
-    // Check that multiple runs of the same sample are of the same datatype i.e. single-end / paired-end
-    def endedness_ok = metas.collect{ meta -> meta.single_end }.unique().size == 1
-    if (!endedness_ok) {
-        error("Please check input samplesheet -> Multiple runs of a sample must be of the same datatype i.e. single-end or paired-end: ${metas[0].id}")
+def resolveSamplesheetPath(String input_path, samplesheet_dir) {
+    if (!input_path) {
+        return input_path
     }
-
-    return [ metas[0], fastqs ]
+    if (input_path.startsWith('/') || input_path.contains('://')) {
+        return input_path
+    }
+    return samplesheet_dir.toString() + '/' + input_path
 }
+
+
 //
 // Generate methods description for MultiQC
 //
