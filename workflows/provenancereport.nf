@@ -31,7 +31,13 @@ workflow PROVENANCEREPORT {
             def input_ids = rows.collect { meta, _input_file -> meta.id }
             def input_files = rows.collect { _meta, input_file -> input_file }
             def input_file_names = input_files.collect { input_file -> input_file.getName() }
-            def report_meta = [ id: report_notebook.baseName, report_file_name: report_notebook.baseName ]
+            def report_meta = [
+                id: report_notebook.baseName,
+                report_file_name: report_notebook.baseName,
+                input_ids: input_ids.join(','),
+                input_files: input_file_names.join(','),
+                input_file_count: input_file_names.size(),
+            ]
             notebook:
             [
                 report_meta,
@@ -41,9 +47,7 @@ workflow PROVENANCEREPORT {
             parameters:
             [
                 input_dir: './',
-                input_ids: input_ids.join(','),
-                input_files: input_file_names.join(','),
-                input_file_count: input_file_names.size(),
+                input_filename: input_file_names[0],
             ]
 
             input_files:

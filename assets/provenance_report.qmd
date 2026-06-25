@@ -8,6 +8,7 @@ format:
 params:
   meta: NULL
   input_dir: ./
+  input_filename: NULL
   artifact_dir: NULL
   cpus: 1
   input_ids: NULL
@@ -33,8 +34,8 @@ split_param <- function(value) {
     }
     strsplit(value, ",", fixed = TRUE)[[1]]
 }
-input_ids <- split_param(params$input_ids)
-input_files <- split_param(params$input_files)
+input_ids <- split_param(params$meta$input_ids)
+input_files <- split_param(params$meta$input_files)
 input_table <- data.frame(
     id = input_ids,
     file = input_files,
@@ -64,7 +65,7 @@ writeLines(
 
 ## Input files
 
-The samplesheet `id` values are provided through `params$input_ids`, and staged filenames are provided through `params$input_files` in the same order.
+The samplesheet `id` values are provided through `params$meta$input_ids`, and staged filenames are provided through `params$meta$input_files` in the same order.
 
 ```{r input-files}
 #| echo: false

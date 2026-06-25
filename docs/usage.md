@@ -8,7 +8,7 @@
 
 `nf-core/provenancereport` validates a samplesheet and renders one Quarto HTML report using all files listed in the samplesheet. The pipeline does not perform biological analysis itself. Instead, it provides a reproducible Nextflow wrapper around a user-supplied or bundled Quarto notebook so that input file paths, workflow versions, and execution metadata are captured consistently.
 
-The default report notebook is `assets/provenance_report.qmd`. You can replace it by passing `--notebook path/to/report.qmd`.
+The default report notebook is `assets/provenance_report.qmd`. You can replace it by passing `--notebook path/to/report.qmd`. In practice, this can be any Quarto notebook that can run non-interactively inside the selected execution environment and read the files listed in the samplesheet.
 
 ## Samplesheet input
 
@@ -40,6 +40,15 @@ The main workflow performs four steps:
 3. `QUARTONOTEBOOK` renders one Quarto HTML report using all samplesheet rows. The process receives `[meta, notebook]`, a parameter map, and the actual input files as a plain path channel.
 4. The workflow publishes the rendered HTML report, any files written to `params$artifact_dir`, and standard pipeline metadata under `pipeline_info/`.
 
+The notebook receives these useful parameters:
+
+| Parameter | Description |
+| --------- | ----------- |
+| `params$meta` | Metadata map for the report, including `id`, `report_file_name`, `input_ids`, `input_files`, and `input_file_count`. |
+| `params$input_dir` | Working directory containing the staged input files. Defaults to `./`. |
+| `params$input_filename` | Staged filename for the first samplesheet row, provided for compatibility with simple Quarto notebook templates. |
+| `params$artifact_dir` | Directory where the notebook should write images, tables, and other artifacts to be published by the pipeline. |
+| `params$cpus` | CPUs allocated to the Quarto render task. |
 
 ## Running the pipeline
 
@@ -167,9 +176,30 @@ To change the resource requests, please see the [max resources](https://nf-co.re
 
 ### Custom Containers
 
-In some cases, you may wish to change the container or conda environment used by a pipeline steps for a particular tool. By default, nf-core pipelines use containers and software from the [biocontainers](https://biocontainers.pro/) or [bioconda](https://bioconda.github.io/) projects. However, in some cases the pipeline specified version maybe out of date.
+In some cases, you may wish to change the container or conda environment used by a pipeline step. This is especially relevant for `nf-core/provenancereport`, because a custom Quarto notebook may require additional R, Python, Julia, system, or Quarto extension dependencies that are not available in the default `QUARTONOTEBOOK` container.
 
-To use a different container from the default container or conda environment specified in a pipeline, please see the [updating tool versions](https://nf-co.re/docs/running/configuration/nextflow-for-your-system#update-tool-versions) section of the nf-core website.
+You can provide any Quarto notebook with `--notebook`, as long as the container used for `QUARTONOTEBOOK` contains Quarto plus all packages required by that notebook. Override the process container in a Nextflow config file with the `container` directive, for example:
+
+```groovy title="custom-container.config"
+process {
+    withName: '.*:QUARTONOTEBOOK' {
+        container = 'quay.io/your-org/quarto-report:latest'
+    }
+}
+```
+
+Then run the pipeline with both your execution profile and the custom config:
+
+```bash
+nextflow run nf-core/provenancereport \
+    -profile docker \
+    -c custom-container.config \
+    --input samplesheet.csv \
+    --notebook report.qmd \
+    --outdir results
+```
+
+For more general guidance, see the [updating tool versions](https://nf-co.re/docs/running/configuration/nextflow-for-your-system#update-tool-versions) section of the nf-core website.
 
 ### Custom Tool Arguments
 

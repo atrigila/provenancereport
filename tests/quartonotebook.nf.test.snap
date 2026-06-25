@@ -1,5 +1,5 @@
 {
-    "-profile test": {
+    "-profile test with custom notebook": {
         "content": [
             {
                 "QUARTONOTEBOOK": {
@@ -16,19 +16,17 @@
                 "pipeline_info/nf_core_provenancereport_software_versions.yml",
                 "quartonotebook",
                 "quartonotebook/artifacts",
-                "quartonotebook/artifacts/provenance_report_input_files.tsv",
-                "quartonotebook/artifacts/provenance_report_summary.txt",
-                "quartonotebook/provenance_report.html",
-                "quartonotebook/provenance_report.qmd"
+                "quartonotebook/artifacts/artifact.txt",
+                "quartonotebook/quarto_r.html",
+                "quartonotebook/quarto_r.qmd"
             ],
             [
-                "provenance_report_input_files.tsv:md5,1458dc07273f8a570beae2b5f4358a49",
-                "provenance_report_summary.txt:md5,b32c187edd9b5ec9c088a0d2a41ff01d",
-                "provenance_report.html:md5,5ff1cf9ee918d499f60191d20690dc4f",
-                "provenance_report.qmd:md5,4fd8ffa820d1e7620135853517275d66"
+                "artifact.txt:md5,b10a8db164e0754105b7a99be72e3fe5",
+                "quarto_r.html:md5,d8402bfefb1a5038f8e623cce95064d4",
+                "quarto_r.qmd:md5,b3fa8b456efae62495c0b278a4f7694c"
             ]
         ],
-        "timestamp": "2026-06-25T14:53:34.630673943",
+        "timestamp": "2026-06-25T14:51:42.000661775",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.0"
