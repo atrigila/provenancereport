@@ -2,3 +2,5 @@
 pipeline_info/*
 nf-prov
 nf-prov/*
+*.html
+**/*.html

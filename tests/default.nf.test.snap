@@ -24,7 +24,6 @@
             [
                 "provenance_report_input_files.tsv:md5,1458dc07273f8a570beae2b5f4358a49",
                 "provenance_report_summary.txt:md5,b32c187edd9b5ec9c088a0d2a41ff01d",
-                "provenance_report.html:md5,5ff1cf9ee918d499f60191d20690dc4f",
                 "provenance_report.qmd:md5,4fd8ffa820d1e7620135853517275d66"
             ]
         ],

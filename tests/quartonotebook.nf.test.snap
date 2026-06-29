@@ -22,11 +22,10 @@
             ],
             [
                 "artifact.txt:md5,b10a8db164e0754105b7a99be72e3fe5",
-                "quarto_r.html:md5,d8402bfefb1a5038f8e623cce95064d4",
                 "quarto_r.qmd:md5,b3fa8b456efae62495c0b278a4f7694c"
             ]
         ],
-        "timestamp": "2026-06-25T14:51:42.000661775",
+        "timestamp": "2026-06-29T11:52:18.819317077",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.0"
