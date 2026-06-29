@@ -24,10 +24,10 @@ counts,counts.tsv
 metadata,metadata.tsv
 ```
 
-| Column | Description |
-| ------ | ----------- |
-| `id` | Unique input identifier. It must be a valid parameter name: start with a letter or underscore and contain only letters, numbers, and underscores. |
-| `path` | Path or URL to exactly one input file. Comma-separated values are not allowed. |
+| Column | Description                                                                                                                                       |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`   | Unique input identifier. It must be a valid parameter name: start with a letter or underscore and contain only letters, numbers, and underscores. |
+| `path` | Path or URL to exactly one input file. Comma-separated values are not allowed.                                                                    |
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
@@ -42,13 +42,13 @@ The main workflow performs four steps:
 
 The notebook receives these useful parameters:
 
-| Parameter | Description |
-| --------- | ----------- |
-| `params$meta` | Metadata map for the report, including `id`, `report_file_name`, `input_ids`, `input_files`, and `input_file_count`. |
-| `params$input_dir` | Working directory containing the staged input files. Defaults to `./`. |
-| `params$input_filename` | Staged filename for the first samplesheet row, provided for compatibility with simple Quarto notebook templates. |
-| `params$artifact_dir` | Directory where the notebook should write images, tables, and other artifacts to be published by the pipeline. |
-| `params$cpus` | CPUs allocated to the Quarto render task. |
+| Parameter               | Description                                                                                                          |
+| ----------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `params$meta`           | Metadata map for the report, including `id`, `report_file_name`, `input_ids`, `input_files`, and `input_file_count`. |
+| `params$input_dir`      | Working directory containing the staged input files. Defaults to `./`.                                               |
+| `params$input_filename` | Staged filename for the first samplesheet row, provided for compatibility with simple Quarto notebook templates.     |
+| `params$artifact_dir`   | Directory where the notebook should write images, tables, and other artifacts to be published by the pipeline.       |
+| `params$cpus`           | CPUs allocated to the Quarto render task.                                                                            |
 
 ## Running the pipeline
 
