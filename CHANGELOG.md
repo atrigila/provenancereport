@@ -9,6 +9,8 @@ Initial release of nf-core/provenancereport, created with the [nf-core](https://
 
 ### `Added`
 
+- [#1](https://github.com/nf-core/provenancereport/pull/15) - First draft implementation of provenancereport pipeline.
+
 ### `Fixed`
 
 ### `Dependencies`
