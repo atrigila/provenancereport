@@ -30,6 +30,8 @@ The default workflow performs the following steps:
 3. Render one Quarto notebook with all listed files using the nf-core `quartonotebook` module.
 4. Publish the generated HTML report, report artifacts, and standard Nextflow execution metadata.
 
+![nf-core/provenancereport metro map](docs/images/provenancereport_metro.svg)
+
 ## Usage
 
 > [!NOTE]
