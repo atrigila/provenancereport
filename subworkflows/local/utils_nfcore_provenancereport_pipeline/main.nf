@@ -102,13 +102,10 @@ workflow PIPELINE_INITIALISATION {
     // Create channel from input file provided through params.input
     //
 
-    def samplesheet_dir = file(input).parent
-
     channel
         .fromList(samplesheetToList(input, "${projectDir}/assets/schema_input.json"))
         .map { meta, input_path ->
-            def resolved_path = resolveSamplesheetPath(input_path, samplesheet_dir)
-            return [ meta, file(resolved_path, checkIfExists: true) ]
+            return [ meta, file(input_path, checkIfExists: true) ]
         }
         .set { ch_samplesheet }
 
@@ -165,16 +162,6 @@ workflow PIPELINE_COMPLETION {
     FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-
-def resolveSamplesheetPath(String input_path, samplesheet_dir) {
-    if (!input_path) {
-        return input_path
-    }
-    if (input_path.startsWith('/') || input_path.contains('://')) {
-        return input_path
-    }
-    return samplesheet_dir.toString() + '/' + input_path
-}
 
 
 //
