@@ -1,2 +1,15 @@
 repository_type: pipeline
 nf_core_version: "4.0.2"
+template:
+  author: Alexander Peltzer, Gregor Sturm, Julian Schwab
+  description: A pipeline to produce provenance reports.
+  force: false
+  is_nfcore: true
+  name: provenancereport
+  org: nf-core
+  outdir: .
+  version: 1.0.0dev
+lint:
+  files_exist:
+    - assets/multiqc_config.yml
+  multiqc_config: false

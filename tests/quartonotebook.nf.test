@@ -1,14 +1,16 @@
 nextflow_pipeline {
 
-    name "Test pipeline"
+    name "Test pipeline with custom quartonotebook"
     script "../main.nf"
     tag "pipeline"
 
-    test("-profile test") {
+    test("-profile test with custom notebook") {
 
         when {
             params {
                 outdir = "$outputDir"
+                input = "${projectDir}/tests/assets/samplesheet_quartonotebook.csv"
+                notebook = "https://raw.githubusercontent.com/nf-core/test-datasets/modules/data/generic/notebooks/quarto/quarto_r.qmd"
             }
         }
 

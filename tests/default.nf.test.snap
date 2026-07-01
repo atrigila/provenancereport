@@ -1,0 +1,36 @@
+{
+    "-profile test": {
+        "content": [
+            {
+                "QUARTONOTEBOOK": {
+                    "papermill": "2.6.0",
+                    "quarto": "1.7.31"
+                },
+                "Workflow": {
+                    "nf-core/provenancereport": "v1.0.0dev"
+                }
+            },
+            [
+                "nf-prov",
+                "pipeline_info",
+                "pipeline_info/nf_core_provenancereport_software_versions.yml",
+                "quartonotebook",
+                "quartonotebook/artifacts",
+                "quartonotebook/artifacts/provenance_report_input_files.tsv",
+                "quartonotebook/artifacts/provenance_report_summary.txt",
+                "quartonotebook/provenance_report.html",
+                "quartonotebook/provenance_report.qmd"
+            ],
+            [
+                "provenance_report_input_files.tsv:md5,1458dc07273f8a570beae2b5f4358a49",
+                "provenance_report_summary.txt:md5,b32c187edd9b5ec9c088a0d2a41ff01d",
+                "provenance_report.qmd:md5,4fd8ffa820d1e7620135853517275d66"
+            ]
+        ],
+        "timestamp": "2026-06-25T14:53:34.630673943",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.0"
+        }
+    }
+}

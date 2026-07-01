@@ -1,0 +1,34 @@
+{
+    "-profile test with custom notebook": {
+        "content": [
+            {
+                "QUARTONOTEBOOK": {
+                    "papermill": "2.6.0",
+                    "quarto": "1.7.31"
+                },
+                "Workflow": {
+                    "nf-core/provenancereport": "v1.0.0dev"
+                }
+            },
+            [
+                "nf-prov",
+                "pipeline_info",
+                "pipeline_info/nf_core_provenancereport_software_versions.yml",
+                "quartonotebook",
+                "quartonotebook/artifacts",
+                "quartonotebook/artifacts/artifact.txt",
+                "quartonotebook/quarto_r.html",
+                "quartonotebook/quarto_r.qmd"
+            ],
+            [
+                "artifact.txt:md5,b10a8db164e0754105b7a99be72e3fe5",
+                "quarto_r.qmd:md5,b3fa8b456efae62495c0b278a4f7694c"
+            ]
+        ],
+        "timestamp": "2026-06-29T11:52:18.819317077",
+        "meta": {
+            "nf-test": "0.9.5",
+            "nextflow": "26.04.0"
+        }
+    }
+}
