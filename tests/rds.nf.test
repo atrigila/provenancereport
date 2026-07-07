@@ -1,0 +1,32 @@
+nextflow_pipeline {
+
+    name "Test pipeline with external RDS input"
+    script "../main.nf"
+    config "tests/assets/quartonotebook_rds.config"
+    tag "pipeline"
+    tag "rds"
+
+    test("-profile test with external RDS input") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+            }
+        }
+
+        then {
+            def stable_path = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}'])
+            def stable_content = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
+            assert workflow.success
+            assertAll(
+                { assert stable_path.findAll { path -> path == "quartonotebook/artifacts/external_rds_summary.tsv" }.size() == 1 },
+                { assert stable_path.findAll { path -> path.startsWith("quartonotebook/") && path.endsWith(".html") }.size() == 1 },
+                { assert snapshot(
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_provenancereport_software_versions.yml"),
+                    stable_path,
+                    stable_content
+                ).match() }
+            )
+        }
+    }
+}
