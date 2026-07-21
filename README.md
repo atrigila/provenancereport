@@ -60,6 +60,8 @@ nextflow run nf-core/provenancereport \
 
 By default, the pipeline renders the bundled notebook in `assets/provenance_report.qmd`. To render your own custom Quarto notebook, provide `--notebook custom_report.qmd`.
 
+Report inputs are staged into the Quarto render working directory by basename. Custom notebooks should read those staged filenames directly, for example `readxl::read_xlsx("counts.xlsx")`, and every file listed in the samplesheet must have a unique basename. See the usage documentation for details on designing custom reports.
+
 > [!WARNING]
 > Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration _**except for parameters**_; see [docs](https://nf-co.re/docs/running/run-pipelines#using-parameter-files).
 
