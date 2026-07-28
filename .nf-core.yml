@@ -12,4 +12,8 @@ template:
 lint:
   files_exist:
     - assets/multiqc_config.yml
+    - .github/workflows/linting_comment.yml
   multiqc_config: false
+  files_unchanged:
+    - .github/workflows/branch.yml
+    - .github/workflows/linting.yml
