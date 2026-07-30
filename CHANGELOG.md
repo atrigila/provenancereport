@@ -9,6 +9,7 @@ Initial release of nf-core/provenancereport, created with the [nf-core](https://
 
 ### `Added`
 
+- [#18](https://github.com/nf-core/provenancereport/pull/18) - Document the required Quarto report `params`and input names in samplesheet.
 - [#16](https://github.com/nf-core/provenancereport/pull/16) - Add a test case with a user-provided quarto input with an external RDS file and user-provided custom container.
 - [#15](https://github.com/nf-core/provenancereport/pull/15) - First draft implementation of provenancereport pipeline.
 

@@ -31,6 +31,70 @@ metadata,metadata.tsv
 
 An [example samplesheet](../assets/samplesheet.csv) has been provided with the pipeline.
 
+## Designing a custom Quarto report
+
+Custom reports should be written to read files from the Quarto task working directory, not from their original source locations. The samplesheet `path` values may point to local files, URLs, or object storage paths, but Nextflow stages each file into the render task using the file basename.
+
+Custom Quarto reports must include a `params` section in the YAML front matter. These defaults define the parameter structure that the `QUARTONOTEBOOK` module will populate at render time:
+
+```yaml
+params:
+  meta: NULL
+  input_dir: ./
+  input_filename: NULL
+  artifact_dir: NULL
+  cpus: 1
+  input_ids: NULL
+  input_files: NULL
+  input_file_count: 0
+```
+
+For example, this samplesheet:
+
+```csv title="samplesheet.csv"
+id,path
+expression,input/expression_sample.xlsx
+metadata,s3://example-bucket/project/metadata.tsv
+```
+
+makes these files available beside the Quarto notebook during rendering:
+
+```text
+expression_sample.xlsx
+metadata.tsv
+```
+
+The report should therefore read:
+
+```r
+expression <- readxl::read_xlsx("expression_sample.xlsx")
+metadata <- readr::read_tsv("metadata.tsv")
+```
+
+and should not read from the original samplesheet locations:
+
+```r
+# Do not do this inside the report
+readxl::read_xlsx("input/expression_sample.xlsx")
+readr::read_tsv("s3://example-bucket/project/metadata.tsv")
+```
+
+Because parent directories are stripped during staging, every file listed in the samplesheet must have a unique basename. This is valid:
+
+```csv title="samplesheet.csv"
+id,path
+expression_xlsx,input/expression_sample.xlsx
+expression_csv,input/expression_sample.csv
+```
+
+Currently this is not valid for the current staging layout because both rows would be staged as `expression.xlsx`:
+
+```csv title="samplesheet.csv"
+id,path
+cohort_a,cohort_a/input/expression.xlsx
+cohort_b,cohort_b/input/expression.xlsx
+```
+
 ## How the pipeline works
 
 The main workflow performs four steps:
