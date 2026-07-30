@@ -35,6 +35,20 @@ An [example samplesheet](../assets/samplesheet.csv) has been provided with the p
 
 Custom reports should be written to read files from the Quarto task working directory, not from their original source locations. The samplesheet `path` values may point to local files, URLs, or object storage paths, but Nextflow stages each file into the render task using the file basename.
 
+Custom Quarto reports must include a `params` section in the YAML front matter. These defaults define the parameter structure that the `QUARTONOTEBOOK` module will populate at render time:
+
+```yaml
+params:
+  meta: NULL
+  input_dir: ./
+  input_filename: NULL
+  artifact_dir: NULL
+  cpus: 1
+  input_ids: NULL
+  input_files: NULL
+  input_file_count: 0
+```
+
 For example, this samplesheet:
 
 ```csv title="samplesheet.csv"
@@ -80,7 +94,6 @@ id,path
 cohort_a,cohort_a/input/expression.xlsx
 cohort_b,cohort_b/input/expression.xlsx
 ```
-
 
 ## How the pipeline works
 
