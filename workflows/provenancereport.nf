@@ -5,6 +5,8 @@
 */
 include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { QUARTONOTEBOOK        } from '../modules/nf-core/quartonotebook/main'
+include { MULTIQC               } from '../modules/nf-core/multiqc/main'
+include { paramsSummaryMultiqc  } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_provenancereport_pipeline'
 
@@ -84,17 +86,111 @@ workflow PROVENANCEREPORT {
             "${process}:\n${tool_versions.join('\n')}"
         }
 
-    softwareVersionsToYAML(ch_versions.mix(topic_versions.versions_file))
+    def ch_collated_versions = softwareVersionsToYAML(ch_versions.mix(topic_versions.versions_file))
         .mix(topic_versions_string)
         .collectFile(
             storeDir: "${outdir}/pipeline_info",
-            name: 'nf_core_'  +  'provenancereport_software_'  + 'versions.yml',
+            name: 'nf_core_'  +  'provenancereport_software_'  + 'mqc_'  + 'versions.yml',
             sort: true,
             newLine: true
         )
+
+    //
+    // MODULE: MultiQC
+    //
+    def ch_multiqc_files = channel.empty()
+    ch_multiqc_files = ch_multiqc_files.mix(ch_collated_versions)
+    ch_multiqc_files = ch_multiqc_files.mix(
+        channel.value(file(params.input, checkIfExists: true)).collectFile(name: 'samplesheet.csv')
+    )
+
+    def ch_summary_params = paramsSummaryMap(workflow, parameters_schema: 'nextflow_schema.json')
+    def workflow_summary = paramsSummaryMultiqc(ch_summary_params)
+        .readLines()
+        .findAll { line -> !line.startsWith('description:') && !line.startsWith('section_href:') }
+        .join('\n')
+    ch_multiqc_files = ch_multiqc_files.mix(
+        channel.value(workflow_summary).collectFile(name: 'workflow_summary_mqc.yaml')
+    )
+
+    def ch_methods_description = channel.value(
+        methodsDescriptionText(file("${projectDir}/assets/methods_description_template.yml", checkIfExists: true))
+    )
+    ch_multiqc_files = ch_multiqc_files.mix(
+        ch_methods_description.collectFile(name: 'methods_description_mqc.yaml', sort: true)
+    )
+
+    def ch_runtime_environment = QUARTONOTEBOOK.out.runtime_environment
+        .map { process_name, container, r_session_info, python_version ->
+            runtimeEnvironmentMultiqc(
+                process_name,
+                container,
+                workflow.containerEngine,
+                workflow.profile,
+                r_session_info,
+                python_version,
+            )
+        }
+        .collectFile(name: 'runtime_environment_mqc.yaml', sort: true)
+    ch_multiqc_files = ch_multiqc_files.mix(ch_runtime_environment)
+
+    MULTIQC (
+        ch_multiqc_files.flatten().collect().map { files ->
+            [
+                [ id: 'provenancereport' ],
+                files,
+                file("${projectDir}/assets/multiqc_config.yml", checkIfExists: true),
+                file("${projectDir}/assets/nf-core-provenancereport_logo_light.png", checkIfExists: true),
+                [],
+                [],
+            ]
+        }
+    )
+
     emit:
-    versions       = ch_versions                 // channel: [ path(versions.yml) ]
-    reports        = QUARTONOTEBOOK.out.html     // channel: [ val(meta), path(html) ]
+    versions       = ch_versions                                      // channel: [ path(versions.yml) ]
+    reports        = QUARTONOTEBOOK.out.html                          // channel: [ val(meta), path(html) ]
+    multiqc_report = MULTIQC.out.report.map { _meta, report -> report } // channel: path(multiqc_report.html)
+}
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    FUNCTIONS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
+def escapeHtml(value) {
+    return (value ?: 'Not available')
+        .replace('&', '&amp;')
+        .replace('<', '&lt;')
+        .replace('>', '&gt;')
+        .replace('"', '&quot;')
+}
+
+def runtimeEnvironmentMultiqc(process_name, container, container_engine, profile, r_session_info, python_version) {
+    def process_text = escapeHtml(process_name)
+    def container_text = escapeHtml(container)
+    def engine_text = escapeHtml(container_engine ?: 'None')
+    def profile_text = escapeHtml(profile ?: 'standard')
+    def r_text = escapeHtml(r_session_info).replace('\n', '\n      ')
+    def python_text = escapeHtml(python_version)
+
+    return """
+    id: 'nf-core-provenancereport-runtime-environment'
+    description: 'Runtime environment used to render the Quarto report.'
+    section_name: 'Report Runtime Environment'
+    plot_type: 'html'
+    data: |
+      <dl class="dl-horizontal">
+        <dt>Process</dt><dd><samp>${process_text}</samp></dd>
+        <dt>Container engine</dt><dd><samp>${engine_text}</samp></dd>
+        <dt>Container</dt><dd><samp>${container_text}</samp></dd>
+        <dt>Nextflow profile</dt><dd><samp>${profile_text}</samp></dd>
+        <dt>Python</dt><dd><samp>${python_text}</samp></dd>
+      </dl>
+      <h4>R sessionInfo()</h4>
+      <pre>${r_text}</pre>
+    """.stripIndent().trim()
 }
 
 /*

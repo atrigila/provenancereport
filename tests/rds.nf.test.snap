@@ -9,21 +9,7 @@
                 "Workflow": {
                     "nf-core/provenancereport": "v1.0.0dev"
                 }
-            },
-            [
-                "nf-prov",
-                "pipeline_info",
-                "pipeline_info/nf_core_provenancereport_software_versions.yml",
-                "quartonotebook",
-                "quartonotebook/artifacts",
-                "quartonotebook/artifacts/external_rds_summary.tsv",
-                "quartonotebook/external_rds_report.html",
-                "quartonotebook/external_rds_report.qmd"
-            ],
-            [
-                "external_rds_summary.tsv:md5,26d3aee09ee5b92e17f0dce912a750aa",
-                "external_rds_report.qmd:md5,33c6e034d026f8d8d619711bec521665"
-            ]
+            }
         ],
         "timestamp": "2026-07-03T14:07:11.68826943",
         "meta": {

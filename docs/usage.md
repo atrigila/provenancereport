@@ -97,12 +97,13 @@ cohort_b,cohort_b/input/expression.xlsx
 
 ## How the pipeline works
 
-The main workflow performs four steps:
+The main workflow performs five steps:
 
 1. `PIPELINE_INITIALISATION` validates `--input` with the `nf-schema` plugin and resolves each `path` entry as a single file.
 2. The workflow selects the notebook using `--notebook`, or the bundled `assets/provenance_report.qmd` if `--notebook` is unset.
 3. `QUARTONOTEBOOK` renders one Quarto HTML report using all samplesheet rows. The process receives `[meta, notebook]`, a parameter map, and the actual input files as a plain path channel.
-4. The workflow publishes the rendered HTML report, any files written to `params$artifact_dir`, and standard pipeline metadata under `pipeline_info/`.
+4. `MULTIQC` collates the workflow parameters, software versions, resolved Quarto container, Nextflow execution profile, `R sessionInfo()`, and Python version. Missing R or Python installations are reported as unavailable without failing the run.
+5. The workflow publishes the Quarto and MultiQC reports, report artifacts, and standard pipeline metadata under `pipeline_info/`.
 
 The notebook receives these useful parameters:
 
