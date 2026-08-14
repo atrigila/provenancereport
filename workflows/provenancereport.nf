@@ -27,7 +27,7 @@ workflow PROVENANCEREPORT {
 
     def ch_versions = channel.empty()
     def report_notebook = file(params.notebook ?: "${projectDir}/assets/provenance_report.qmd", checkIfExists: true)
-    document_file = params.document ? channel.of(file(params.document)) : channel.empty()
+    document_file = params.document ? file(params.document) : channel.empty()
 
     ch_quarto_input = ch_samplesheet
         .collect(flat: false)
@@ -130,6 +130,12 @@ workflow PROVENANCEREPORT {
         }
         .collectFile(name: 'runtime_environment_mqc.yaml', sort: true)
     ch_multiqc_files = ch_multiqc_files.mix(ch_runtime_environment)
+    if (params.document) {
+        def ch_traceability_document = channel.value(
+            traceabilityDocumentMultiqc(document_file.getName(), document_file.toString())
+        ).collectFile(name: 'traceability_document_mqc.yaml', sort: true)
+        ch_multiqc_files = ch_multiqc_files.mix(ch_traceability_document)
+    }
 
     MULTIQC (
         ch_multiqc_files.flatten().collect().map { files ->
@@ -190,6 +196,23 @@ def runtimeEnvironmentMultiqc(process_name, container, container_engine, profile
       </dl>
       <h4>R sessionInfo()</h4>
       <pre>${r_text}</pre>
+    """.stripIndent().trim()
+}
+
+def traceabilityDocumentMultiqc(document_name, document_path) {
+    def document_name_text = escapeHtml(document_name)
+    def document_path_text = escapeHtml(document_path)
+
+    return """
+    id: 'nf-core-provenancereport-traceability-document'
+    description: 'Review sign-off document supplied for this provenance report run.'
+    section_name: 'Traceability Document Review'
+    plot_type: 'html'
+    data: |
+      <dl class="dl-horizontal">
+        <dt>Document file</dt><dd><samp>${document_name_text}</samp></dd>
+        <dt>Source path</dt><dd><samp>${document_path_text}</samp></dd>
+      </dl>
     """.stripIndent().trim()
 }
 

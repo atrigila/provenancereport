@@ -42,4 +42,29 @@ nextflow_pipeline {
             )
         }
     }
+
+    test("-profile test with --document") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+                document = "${projectDir}/tests/assets/review_signoff.md"
+            }
+        }
+
+        then {
+            def multiqc_report = path("$outputDir/multiqc/multiqc_report.html")
+            def published_document = path("$outputDir/review_signoff.md")
+            assert workflow.success
+            assertAll(
+                { assert multiqc_report.exists() },
+                { assert published_document.exists() },
+                { assert multiqc_report.text.contains('id="nf-core-provenancereport-traceability-document"') },
+                { assert multiqc_report.text.contains('Traceability Document Review') },
+                { assert multiqc_report.text.contains('review_signoff.md') },
+                { assert multiqc_report.text.indexOf('<h2 class="mb-0" id="input_samplesheet">') < multiqc_report.text.indexOf('<h2 class="mb-0" id="nf-core-provenancereport-traceability-document"') },
+                { assert multiqc_report.text.indexOf('<h2 class="mb-0" id="nf-core-provenancereport-traceability-document"') < multiqc_report.text.indexOf('<h2 class="mb-0" id="multiqc_software_versions">') },
+            )
+        }
+    }
 }
