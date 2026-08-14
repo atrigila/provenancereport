@@ -27,6 +27,7 @@ workflow PROVENANCEREPORT {
 
     def ch_versions = channel.empty()
     def report_notebook = file(params.notebook ?: "${projectDir}/assets/provenance_report.qmd", checkIfExists: true)
+    document_file = params.document ? channel.of(file(params.document)) : channel.empty()
 
     ch_quarto_input = ch_samplesheet
         .collect(flat: false)
@@ -143,10 +144,13 @@ workflow PROVENANCEREPORT {
         }
     )
 
+    STAGE_FILE(document_file)
+
     emit:
     versions       = ch_versions                                      // channel: [ path(versions.yml) ]
     reports        = QUARTONOTEBOOK.out.html                          // channel: [ val(meta), path(html) ]
     multiqc_report = MULTIQC.out.report.map { _meta, report -> report } // channel: path(multiqc_report.html)
+    document       = STAGE_FILE.out
 }
 
 /*
@@ -189,6 +193,19 @@ def runtimeEnvironmentMultiqc(process_name, container, container_engine, profile
     """.stripIndent().trim()
 }
 
+process STAGE_FILE {
+    label 'process_single'
+
+    input:
+    path(file_in)
+
+    output:
+    path(file_in)
+
+    script:
+    """
+    """
+}
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     THE END
