@@ -5,8 +5,10 @@ report_comment: >
 report_section_order:
   input_samplesheet:
     order: 100000
-  "nf-core-provenancereport-traceability-document":
+  "nf-core-provenancereport-rendered-report":
     order: 99999
+  "nf-core-provenancereport-traceability-document":
+    order: 99998
   "nf-core-provenancereport-methods-description":
     order: -1000
   software_versions:
