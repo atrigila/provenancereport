@@ -8,7 +8,7 @@
 
 `nf-core/provenancereport` validates a samplesheet and renders one Quarto HTML report using all files listed in the samplesheet. The pipeline does not perform biological analysis itself. Instead, it provides a reproducible Nextflow wrapper around a user-supplied or bundled Quarto notebook so that input file paths, workflow versions, and execution metadata are captured consistently.
 
-The default report notebook is `assets/provenance_report.qmd`. You can replace it by passing `--notebook path/to/report.qmd`. In practice, this can be any Quarto notebook that can run non-interactively inside the selected execution environment and read the files listed in the samplesheet.
+The default report notebook is `assets/provenance_report.qmd`. You can replace it by passing `--notebook path/to/report.qmd`. In practice, this can be any Quarto notebook that can run non-interactively inside the image selected with `--report_container` and read the files listed in the samplesheet.
 
 ## Samplesheet input
 
@@ -97,13 +97,14 @@ cohort_b,cohort_b/input/expression.xlsx
 
 ## How the pipeline works
 
-The main workflow performs five steps:
+The main workflow performs six steps:
 
 1. `PIPELINE_INITIALISATION` validates `--input` with the `nf-schema` plugin and resolves each `path` entry as a single file.
 2. The workflow selects the notebook using `--notebook`, or the bundled `assets/provenance_report.qmd` if `--notebook` is unset.
 3. `QUARTONOTEBOOK` renders one Quarto HTML report using all samplesheet rows. The process receives `[meta, notebook]`, a parameter map, and the actual input files as a plain path channel.
-4. `MULTIQC` collates the workflow parameters, software versions, resolved Quarto container, Nextflow execution profile, `R sessionInfo()`, and Python version. Missing R or Python installations are reported as unavailable without failing the run.
-5. The workflow publishes the Quarto and MultiQC reports, report artifacts, and standard pipeline metadata under `pipeline_info/`.
+4. `REPORTENVIRONMENT` runs in the same `--report_container` image as `QUARTONOTEBOOK` and captures its resolved container reference, Quarto version, `R sessionInfo()`, and Python version. Missing R or Python installations are reported as unavailable without failing the run.
+5. `MULTIQC` collates the workflow parameters, software versions, runtime-environment information, and Nextflow execution profile.
+6. The workflow publishes the Quarto and MultiQC reports, report artifacts, and standard pipeline metadata under `pipeline_info/`.
 
 The notebook receives these useful parameters:
 
@@ -124,6 +125,17 @@ nextflow run nf-core/provenancereport --input ./samplesheet.csv --outdir ./resul
 ```
 
 This will launch the pipeline with the `docker` configuration profile. See below for more information about profiles.
+
+Use `--report_container` when a custom notebook requires a different image. The pipeline uses this image for both Quarto rendering and runtime metadata collection:
+
+```bash
+nextflow run nf-core/provenancereport \
+    --input ./samplesheet.csv \
+    --notebook ./custom_report.qmd \
+    --report_container community.wave.seqera.io/library/my-report-environment:tag \
+    --outdir ./results \
+    -profile docker
+```
 
 Note that the pipeline will create the following files in your working directory:
 
