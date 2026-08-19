@@ -2,7 +2,11 @@ process REPORTENVIRONMENT {
     tag 'report runtime environment'
     label 'process_single'
 
+    input:
+    path(stage_file)
+
     output:
+    path(stage_file), emit: staged_file
     tuple val("${task.process}"),
           val("${task.container ?: 'Not configured'}"),
           eval("if command -v Rscript >/dev/null 2>&1; then Rscript -e 'sessionInfo()' 2>/dev/null || printf 'Not available\\n'; else printf 'Not available\\n'; fi"),

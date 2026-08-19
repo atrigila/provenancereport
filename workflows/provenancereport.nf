@@ -3,13 +3,14 @@
     IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-include { paramsSummaryMap       } from 'plugin/nf-schema'
-include { QUARTONOTEBOOK        } from '../modules/nf-core/quartonotebook/main'
-include { REPORTENVIRONMENT     } from '../modules/local/reportenvironment/main'
-include { MULTIQC               } from '../modules/nf-core/multiqc/main'
-include { paramsSummaryMultiqc  } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_provenancereport_pipeline'
+include { paramsSummaryMap                } from 'plugin/nf-schema'
+include { QUARTONOTEBOOK                  } from '../modules/nf-core/quartonotebook/main'
+include { REPORTENVIRONMENT               } from '../modules/local/reportenvironment/main'
+include { REPORTENVIRONMENT as STAGE_FILE } from '../modules/local/reportenvironment/main'
+include { MULTIQC                         } from '../modules/nf-core/multiqc/main'
+include { paramsSummaryMultiqc            } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { softwareVersionsToYAML          } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { methodsDescriptionText          } from '../subworkflows/local/utils_nfcore_provenancereport_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -68,7 +69,7 @@ workflow PROVENANCEREPORT {
         ch_quarto_input.extensions,
     )
 
-    REPORTENVIRONMENT ()
+    REPORTENVIRONMENT (report_notebook)
 
     //
     // Collate and save software versions
@@ -156,7 +157,7 @@ workflow PROVENANCEREPORT {
     versions       = ch_versions                                      // channel: [ path(versions.yml) ]
     reports        = QUARTONOTEBOOK.out.html                          // channel: [ val(meta), path(html) ]
     multiqc_report = MULTIQC.out.report.map { _meta, report -> report } // channel: path(multiqc_report.html)
-    document       = STAGE_FILE.out
+    document       = STAGE_FILE.out.staged_file
 }
 
 /*
@@ -216,19 +217,6 @@ def traceabilityDocumentMultiqc(document_name, document_path) {
     """.stripIndent().trim()
 }
 
-process STAGE_FILE {
-    label 'process_single'
-
-    input:
-    path(file_in)
-
-    output:
-    path(file_in)
-
-    script:
-    """
-    """
-}
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     THE END
