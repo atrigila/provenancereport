@@ -5,6 +5,7 @@
 */
 include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { QUARTONOTEBOOK        } from '../modules/nf-core/quartonotebook/main'
+include { REPORTENVIRONMENT     } from '../modules/local/reportenvironment/main'
 include { MULTIQC               } from '../modules/nf-core/multiqc/main'
 include { paramsSummaryMultiqc  } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -66,19 +67,14 @@ workflow PROVENANCEREPORT {
         ch_quarto_input.extensions,
     )
 
+    REPORTENVIRONMENT ()
+
     //
     // Collate and save software versions
     //
-    def topic_versions = channel.topic("versions")
-        .distinct()
-        .branch { entry ->
-            versions_file: entry instanceof Path
-            versions_tuple: true
-        }
-
-    def topic_versions_string = topic_versions.versions_tuple
-        .map { process, tool, version ->
-            [ process[process.lastIndexOf(':')+1..-1], "  ${tool}: ${version}" ]
+    def report_environment_versions = REPORTENVIRONMENT.out.versions
+        .map { _process, tool, version ->
+            [ 'QUARTONOTEBOOK', "  ${tool}: ${version}" ]
         }
         .groupTuple(by:0)
         .map { process, tool_versions ->
@@ -86,8 +82,8 @@ workflow PROVENANCEREPORT {
             "${process}:\n${tool_versions.join('\n')}"
         }
 
-    def ch_collated_versions = softwareVersionsToYAML(ch_versions.mix(topic_versions.versions_file))
-        .mix(topic_versions_string)
+    def ch_collated_versions = softwareVersionsToYAML(ch_versions)
+        .mix(report_environment_versions)
         .collectFile(
             storeDir: "${outdir}/pipeline_info",
             name: 'nf_core_'  +  'provenancereport_software_'  + 'mqc_'  + 'versions.yml',
@@ -120,7 +116,7 @@ workflow PROVENANCEREPORT {
         ch_methods_description.collectFile(name: 'methods_description_mqc.yaml', sort: true)
     )
 
-    def ch_runtime_environment = QUARTONOTEBOOK.out.runtime_environment
+    def ch_runtime_environment = REPORTENVIRONMENT.out.runtime_environment
         .map { process_name, container, r_session_info, python_version ->
             runtimeEnvironmentMultiqc(
                 process_name,
