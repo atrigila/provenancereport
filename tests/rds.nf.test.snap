@@ -3,6 +3,7 @@
         "content": [
             {
                 "QUARTONOTEBOOK": {
+                    "papermill": "2.6.0",
                     "quarto": "1.7.31"
                 },
                 "Workflow": {
@@ -10,7 +11,7 @@
                 }
             }
         ],
-        "timestamp": "2026-08-19T12:49:23.936571689",
+        "timestamp": "2026-08-19T21:05:04.309583871",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"

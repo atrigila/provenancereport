@@ -3,6 +3,7 @@
         "content": [
             {
                 "QUARTONOTEBOOK": {
+                    "papermill": "2.6.0",
                     "quarto": "1.7.31"
                 },
                 "Workflow": {
@@ -10,8 +11,12 @@
                 }
             },
             [
-                "README.md:md5,87e7dd005192da3562f03562b9a99ebc",
+                "README.md:md5,675e5d6c3dbc9598e26c801377bae67e",
                 "main.nf:md5,f8cc1568cd9c0105fb6cb26f6be01afd",
+                "md5sum",
+                "md5sum/counts.tsv.md5",
+                "md5sum/metadata.tsv.md5",
+                "md5sum/provenance_report.html.md5",
                 "multiqc",
                 "multiqc/multiqc_data",
                 "multiqc/multiqc_data/llms-full.txt",
@@ -19,6 +24,7 @@
                 "multiqc/multiqc_data/multiqc.parquet",
                 "multiqc/multiqc_data/multiqc_citations.txt",
                 "multiqc/multiqc_data/multiqc_data.json",
+                "multiqc/multiqc_data/multiqc_file_checksums_table.txt",
                 "multiqc/multiqc_data/multiqc_input_samplesheet.txt",
                 "multiqc/multiqc_data/multiqc_software_versions.txt",
                 "multiqc/multiqc_data/multiqc_sources.txt",
@@ -36,8 +42,11 @@
                 "samplesheet.csv"
             ],
             [
-                "README.md:md5,87e7dd005192da3562f03562b9a99ebc",
+                "README.md:md5,675e5d6c3dbc9598e26c801377bae67e",
                 "main.nf:md5,f8cc1568cd9c0105fb6cb26f6be01afd",
+                "counts.tsv.md5:md5,08304964a7dcc727a1c6e2b9564293ec",
+                "metadata.tsv.md5:md5,0007611513f2da1764b9fbbe8b51cf55",
+                "provenance_report.html.md5:md5,55b0b9dcd0629ad366e17d48de9b302e",
                 "nextflow_schema.json:md5,15848ca0df442211be8fa3c5468062bf",
                 "provenance_report_input_files.tsv:md5,1458dc07273f8a570beae2b5f4358a49",
                 "provenance_report_summary.txt:md5,b32c187edd9b5ec9c088a0d2a41ff01d",
@@ -45,7 +54,7 @@
                 "samplesheet.csv:md5,760077fbeb3954e468d83244325f4ade"
             ]
         ],
-        "timestamp": "2026-08-19T12:48:41.799152655",
+        "timestamp": "2026-08-19T21:04:01.608097783",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
