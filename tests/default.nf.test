@@ -18,6 +18,7 @@ nextflow_pipeline {
             // stable_content: All files in ${params.outdir}/ with stable content
             def stable_content = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
             def multiqc_report = path("$outputDir/multiqc/multiqc_report.html")
+            def software_versions = path("$outputDir/pipeline_info/nf_core_provenancereport_software_mqc_versions.yml")
             assert workflow.success
             assertAll(
                 { assert stable_path.findAll { path -> path.startsWith("quartonotebook/") && path.endsWith(".html") }.size() == 1 },
@@ -33,6 +34,10 @@ nextflow_pipeline {
                 { assert !multiqc_report.text.contains('A reproducibility-focused description of how this report was produced.') },
                 { assert !multiqc_report.text.contains('this information is collected when the pipeline is started.') },
                 { assert multiqc_report.text.contains('id="nf-core-provenancereport-runtime-environment"') },
+                { assert multiqc_report.text.contains('community.wave.seqera.io/library/jupyter_matplotlib_papermill_quarto_r-rmarkdown:6d15193ce3dfc665') },
+                { assert software_versions.text.contains('QUARTONOTEBOOK:') },
+                { assert software_versions.text.contains('  quarto: 1.7.31') },
+                { assert !software_versions.text.contains('  papermill:') },
                 { assert multiqc_report.text.indexOf('<h2 class="mb-0" id="input_samplesheet">') < multiqc_report.text.indexOf('<h2 class="mb-0" id="multiqc_software_versions">') },
             )
         }

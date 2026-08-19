@@ -3,7 +3,6 @@
         "content": [
             {
                 "QUARTONOTEBOOK": {
-                    "papermill": "2.6.0",
                     "quarto": "1.7.31"
                 },
                 "Workflow": {
@@ -11,7 +10,7 @@
                 }
             },
             [
-                "README.md:md5,c4b54282b5fcdf230c7cf6da2ea572e2",
+                "README.md:md5,87e7dd005192da3562f03562b9a99ebc",
                 "main.nf:md5,f8cc1568cd9c0105fb6cb26f6be01afd",
                 "multiqc",
                 "multiqc/multiqc_data",
@@ -24,8 +23,8 @@
                 "multiqc/multiqc_data/multiqc_software_versions.txt",
                 "multiqc/multiqc_data/multiqc_sources.txt",
                 "multiqc/multiqc_report.html",
-                "nextflow.config:md5,01c61aa50f2f38968d898ef079b9fa79",
-                "nextflow_schema.json:md5,912efe2fd85ea0b784d582102f2cf70d",
+                "nextflow.config:md5,ca30b38fd47d441f87eb37e6bea69fcb",
+                "nextflow_schema.json:md5,15848ca0df442211be8fa3c5468062bf",
                 "pipeline_info",
                 "pipeline_info/nf_core_provenancereport_software_mqc_versions.yml",
                 "quartonotebook",
@@ -36,15 +35,15 @@
                 "samplesheet_quartonotebook.csv"
             ],
             [
-                "README.md:md5,c4b54282b5fcdf230c7cf6da2ea572e2",
+                "README.md:md5,87e7dd005192da3562f03562b9a99ebc",
                 "main.nf:md5,f8cc1568cd9c0105fb6cb26f6be01afd",
-                "nextflow_schema.json:md5,912efe2fd85ea0b784d582102f2cf70d",
+                "nextflow_schema.json:md5,15848ca0df442211be8fa3c5468062bf",
                 "artifact.txt:md5,b10a8db164e0754105b7a99be72e3fe5",
-                "quarto_r.qmd:md5,b3fa8b456efae62495c0b278a4f7694c",
+                "quarto_r.qmd:md5,a6a7392a32a4a2f5637fd8245b936031",
                 "samplesheet_quartonotebook.csv:md5,33cd9804d52f8ff96e2244df29e5cd2a"
             ]
         ],
-        "timestamp": "2026-08-12T14:56:09.837041065",
+        "timestamp": "2026-08-19T12:49:03.364454834",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
