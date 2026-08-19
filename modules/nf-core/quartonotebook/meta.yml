@@ -127,19 +127,6 @@ output:
       - papermill --version | cut -f1 -d" ":
           type: eval
           description: The expression to obtain the version of the tool
-  runtime_environment:
-    - - ${task.process}:
-          type: string
-          description: The name of the report-rendering process
-      - ${task.container}:
-          type: string
-          description: The container image configured for the report-rendering process
-      - Rscript -e 'sessionInfo()':
-          type: eval
-          description: R version, platform, locale, and attached package information when R is available
-      - python --version:
-          type: eval
-          description: Python version when Python is available
 
 topics:
   versions:
