@@ -28,7 +28,8 @@ The default workflow performs the following steps:
 1. Validate and normalise the input samplesheet with `nf-schema`.
 2. Resolve each `path` entry from the samplesheet as one input file.
 3. Render one Quarto notebook with all listed files using the nf-core `quartonotebook` module.
-4. Publish the generated HTML report, report artifacts, and standard Nextflow execution metadata.
+4. Run a local environment collector in the same `--report_container` image as Quarto and generate a MultiQC audit report containing the run configuration, software versions, container reference, and R/Python runtime information.
+5. Publish the reports, artifacts, and standard Nextflow execution metadata.
 
 ![nf-core/provenancereport metro map](docs/images/provenancereport_metro.svg)
 
