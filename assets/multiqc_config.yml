@@ -5,6 +5,8 @@ report_comment: >
 report_section_order:
   input_samplesheet:
     order: 100000
+  file_checksums:
+    order: 99999
   "nf-core-provenancereport-methods-description":
     order: -1000
   software_versions:
@@ -20,6 +22,7 @@ disable_version_detection: true
 custom_content:
   order:
     - input_samplesheet
+    - file_checksums
 
 custom_data:
   input_samplesheet:
@@ -30,7 +33,24 @@ custom_data:
     headers:
       path:
         title: Source path
+  file_checksums:
+    id: "file_checksums"
+    section_name: "File Checksums"
+    description: "MD5 checksums for every file listed in the input samplesheet and the rendered Quarto report."
+    plot_type: "table"
+    file_format: "tsv"
+    pconfig:
+      id: "file_checksums_table"
+      col1_header: "File"
+    headers:
+      type:
+        title: Type
+      md5:
+        title: MD5
+        description: MD5 checksum
 
 sp:
   input_samplesheet:
     fn: "samplesheet.csv"
+  file_checksums:
+    fn: "file_checksums_mqc.tsv"

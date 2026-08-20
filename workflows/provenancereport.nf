@@ -6,6 +6,7 @@
 include { paramsSummaryMap       } from 'plugin/nf-schema'
 include { QUARTONOTEBOOK        } from '../modules/nf-core/quartonotebook/main'
 include { REPORTENVIRONMENT     } from '../modules/local/reportenvironment/main'
+include { MD5SUM                } from '../modules/nf-core/md5sum/main'
 include { MULTIQC               } from '../modules/nf-core/multiqc/main'
 include { paramsSummaryMultiqc  } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -70,11 +71,44 @@ workflow PROVENANCEREPORT {
     REPORTENVIRONMENT ()
 
     //
+    // Calculate checksums for every samplesheet input and the rendered report
+    //
+    def ch_input_checksum_files = ch_samplesheet.map { meta, input_file ->
+        [
+            meta + [
+                checksum_file: input_file.getName(),
+                checksum_type: 'Samplesheet input',
+            ],
+            input_file,
+        ]
+    }
+
+    def ch_report_checksum_files = QUARTONOTEBOOK.out.html.map { meta, report_file ->
+        [
+            meta + [
+                id: "${meta.id}_html",
+                checksum_file: report_file.getName(),
+                checksum_type: 'Quarto report',
+            ],
+            report_file,
+        ]
+    }
+
+    MD5SUM (
+        ch_input_checksum_files.mix(ch_report_checksum_files),
+        true,
+    )
+
+    //
     // Collate and save software versions
     //
-    def report_environment_versions = REPORTENVIRONMENT.out.versions
-        .map { _process, tool, version ->
-            [ 'QUARTONOTEBOOK', "  ${tool}: ${version}" ]
+    def quartonotebook_versions = QUARTONOTEBOOK.out.versions_quarto
+        .mix(QUARTONOTEBOOK.out.versions_papermill)
+        .map { process, tool, version ->
+            def trimmed_version = version?.toString()?.trim()
+            trimmed_version
+                ? [ process.tokenize(':')[-1], "  ${tool}: ${trimmed_version}" ]
+                : null
         }
         .groupTuple(by:0)
         .map { process, tool_versions ->
@@ -83,7 +117,7 @@ workflow PROVENANCEREPORT {
         }
 
     def ch_collated_versions = softwareVersionsToYAML(ch_versions)
-        .mix(report_environment_versions)
+        .mix(quartonotebook_versions)
         .collectFile(
             storeDir: "${outdir}/pipeline_info",
             name: 'nf_core_'  +  'provenancereport_software_'  + 'mqc_'  + 'versions.yml',
@@ -99,6 +133,16 @@ workflow PROVENANCEREPORT {
     ch_multiqc_files = ch_multiqc_files.mix(
         channel.value(file(params.input, checkIfExists: true)).collectFile(name: 'samplesheet.csv')
     )
+
+    def ch_file_checksums = MD5SUM.out.checksum
+        .map { meta, checksum_file -> checksumMultiqcRow(meta, checksum_file) }
+        .collectFile(
+            name: 'file_checksums_mqc.tsv',
+            sort: true,
+            newLine: true,
+            seed: "file\ttype\tmd5\n",
+        )
+    ch_multiqc_files = ch_multiqc_files.mix(ch_file_checksums)
 
     def ch_summary_params = paramsSummaryMap(workflow, parameters_schema: 'nextflow_schema.json')
     def workflow_summary = paramsSummaryMultiqc(ch_summary_params)
@@ -161,6 +205,22 @@ def escapeHtml(value) {
         .replace('<', '&lt;')
         .replace('>', '&gt;')
         .replace('"', '&quot;')
+}
+
+def quoteTsv(value) {
+    return '"' + (value ?: '').toString().replace('"', '""') + '"'
+}
+
+def checksumMultiqcRow(meta, checksum_file) {
+    def checksum_path = checksum_file instanceof List ? checksum_file.first() : checksum_file
+    def checksum_fields = checksum_path.text.trim().tokenize()
+    def checksum = checksum_fields ? checksum_fields.first() : 'Not available'
+
+    return [
+        quoteTsv(meta.checksum_file),
+        quoteTsv(meta.checksum_type),
+        quoteTsv(checksum),
+    ].join('\t')
 }
 
 def runtimeEnvironmentMultiqc(process_name, container, container_engine, profile, r_session_info, python_version) {
