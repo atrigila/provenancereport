@@ -95,16 +95,27 @@ cohort_a,cohort_a/input/expression.xlsx
 cohort_b,cohort_b/input/expression.xlsx
 ```
 
+## Review document input
+
+Use `--document` to attach a review or sign-off file to the run, for example a completed checklist, SOP, approval form, or other traceability record:
+
+```bash
+--document '[path to review document]'
+```
+
+When set, the pipeline stages this file into the results and adds a "Traceability Document Review" section to the MultiQC report so the run records which review document was supplied. This parameter is optional and does not affect Quarto rendering itself.
+
 ## How the pipeline works
 
-The main workflow performs six steps:
+The main workflow performs seven steps:
 
 1. `PIPELINE_INITIALISATION` validates `--input` with the `nf-schema` plugin and resolves each `path` entry as a single file.
 2. The workflow selects the notebook using `--notebook`, or the bundled `assets/provenance_report.qmd` if `--notebook` is unset.
 3. `QUARTONOTEBOOK` renders one Quarto HTML report using all samplesheet rows. The process receives `[meta, notebook]`, a parameter map, and the actual input files as a plain path channel.
 4. `REPORTENVIRONMENT` runs in the same `--report_container` image as `QUARTONOTEBOOK` and captures its resolved container reference, Quarto version, `R sessionInfo()`, and Python version. Missing R or Python installations are reported as unavailable without failing the run.
-5. `MULTIQC` collates the workflow parameters, software versions, runtime-environment information, and Nextflow execution profile.
-6. The workflow publishes the Quarto and MultiQC reports, report artifacts, and standard pipeline metadata under `pipeline_info/`.
+5. If `--document` is set, the workflow adds a traceability-document summary to MultiQC and stages the supplied review file into the published results.
+6. `MULTIQC` collates the workflow parameters, software versions, runtime-environment information, and Nextflow execution profile.
+7. The workflow publishes the Quarto and MultiQC reports, report artifacts, and standard pipeline metadata under `pipeline_info/`.
 
 The notebook receives these useful parameters:
 
@@ -132,6 +143,7 @@ Use `--report_container` when a custom notebook requires a different image. The 
 nextflow run nf-core/provenancereport \
     --input ./samplesheet.csv \
     --notebook ./custom_report.qmd \
+    --document ./review-signoff.pdf \
     --report_container community.wave.seqera.io/library/my-report-environment:tag \
     --outdir ./results \
     -profile docker
@@ -165,9 +177,10 @@ with:
 input: "./samplesheet.csv"
 outdir: "./results/"
 notebook: "./custom_report.qmd"
+document: "./review-signoff.pdf"
 ```
 
-The `notebook` entry is optional. If it is omitted, the bundled `assets/provenance_report.qmd` notebook is used.
+The `notebook` and `document` entries are optional. If `notebook` is omitted, the bundled `assets/provenance_report.qmd` notebook is used. If `document` is omitted, no review document is staged and the corresponding MultiQC section is not added.
 
 You can also generate such `YAML`/`JSON` files via [nf-core/launch](https://nf-co.re/launch).
 
