@@ -24,7 +24,7 @@
                 "multiqc/multiqc_data/multiqc_sources.txt",
                 "multiqc/multiqc_report.html",
                 "nextflow.config:md5,51799b5ab6b9e7f70b51eddae111a8ae",
-                "nextflow_schema.json:md5,771a96e9cdd54f6f674126e29152997c",
+                "nextflow_schema.json:md5,e7342e15cef1e11bfb50150cf9953a1d",
                 "pipeline_info",
                 "pipeline_info/nf_core_provenancereport_software_mqc_versions.yml",
                 "quartonotebook",
@@ -37,13 +37,13 @@
             [
                 "README.md:md5,87e7dd005192da3562f03562b9a99ebc",
                 "main.nf:md5,f8cc1568cd9c0105fb6cb26f6be01afd",
-                "nextflow_schema.json:md5,771a96e9cdd54f6f674126e29152997c",
+                "nextflow_schema.json:md5,e7342e15cef1e11bfb50150cf9953a1d",
                 "artifact.txt:md5,b10a8db164e0754105b7a99be72e3fe5",
                 "quarto_r.qmd:md5,a6a7392a32a4a2f5637fd8245b936031",
                 "samplesheet_quartonotebook.csv:md5,33cd9804d52f8ff96e2244df29e5cd2a"
             ]
         ],
-        "timestamp": "2026-08-19T22:05:21.939409725",
+        "timestamp": "2026-08-20T15:27:57.097450449",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.1"
