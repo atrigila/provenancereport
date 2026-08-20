@@ -46,7 +46,6 @@
                 "main.nf:md5,f8cc1568cd9c0105fb6cb26f6be01afd",
                 "counts.tsv.md5:md5,08304964a7dcc727a1c6e2b9564293ec",
                 "metadata.tsv.md5:md5,0007611513f2da1764b9fbbe8b51cf55",
-                "provenance_report.html.md5:md5,55b0b9dcd0629ad366e17d48de9b302e",
                 "nextflow_schema.json:md5,15848ca0df442211be8fa3c5468062bf",
                 "provenance_report_input_files.tsv:md5,1458dc07273f8a570beae2b5f4358a49",
                 "provenance_report_summary.txt:md5,b32c187edd9b5ec9c088a0d2a41ff01d",
@@ -54,7 +53,7 @@
                 "samplesheet.csv:md5,760077fbeb3954e468d83244325f4ade"
             ]
         ],
-        "timestamp": "2026-08-19T21:04:01.608097783",
+        "timestamp": "2026-08-20T00:13:39.624310196",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
