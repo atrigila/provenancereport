@@ -6,7 +6,7 @@
 include { paramsSummaryMap                } from 'plugin/nf-schema'
 include { QUARTONOTEBOOK                  } from '../modules/nf-core/quartonotebook/main'
 include { REPORTENVIRONMENT               } from '../modules/local/reportenvironment/main'
-include { REPORTENVIRONMENT as STAGE_FILE } from '../modules/local/reportenvironment/main'
+include { STAGE_FILE                      } from '../modules/local/stage_file/main'
 include { MULTIQC                         } from '../modules/nf-core/multiqc/main'
 include { paramsSummaryMultiqc            } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML          } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -69,7 +69,7 @@ workflow PROVENANCEREPORT {
         ch_quarto_input.extensions,
     )
 
-    REPORTENVIRONMENT (report_notebook)
+    REPORTENVIRONMENT ()
 
     //
     // Collate and save software versions
@@ -157,7 +157,7 @@ workflow PROVENANCEREPORT {
         }
     )
 
-    STAGE_FILE(document_file)
+    STAGE_FILE (document_file)
 
     emit:
     versions       = ch_versions                                      // channel: [ path(versions.yml) ]
