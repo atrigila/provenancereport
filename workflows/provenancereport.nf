@@ -131,18 +131,30 @@ workflow PROVENANCEREPORT {
         }
         .collectFile(name: 'runtime_environment_mqc.yaml', sort: true)
     ch_multiqc_files = ch_multiqc_files.mix(ch_runtime_environment)
-    def ch_rendered_report = QUARTONOTEBOOK.out.html
+    def ch_pipeline_outputs_rows = QUARTONOTEBOOK.out.html
         .map { _meta, report ->
-            renderedReportMultiqc(report.getName(), "quartonotebook/${report.getName()}")
+            [
+                file: report.getName(),
+                output_path: "quartonotebook/${report.getName()}",
+            ]
         }
-        .collectFile(name: 'rendered_report_mqc.yaml', sort: true)
-    ch_multiqc_files = ch_multiqc_files.mix(ch_rendered_report)
     if (params.document) {
-        def ch_traceability_document = channel.value(
-            traceabilityDocumentMultiqc(document_file.getName(), document_file.toString())
-        ).collectFile(name: 'traceability_document_mqc.yaml', sort: true)
-        ch_multiqc_files = ch_multiqc_files.mix(ch_traceability_document)
+        ch_pipeline_outputs_rows = ch_pipeline_outputs_rows.mix(
+            channel.value(
+                [
+                    file: ch_document_file.getName(),
+                    output_path: ch_document_file.getName(),
+                ]
+            )
+        )
     }
+    def ch_pipeline_outputs = ch_pipeline_outputs_rows
+        .collect()
+        .map { rows ->
+            (['file\toutput_path'] + rows.collect { row -> "${row.file}\t${row.output_path}" }).join('\n')
+        }
+        .collectFile(name: 'pipeline_outputs_mqc.tsv', newLine: true)
+    ch_multiqc_files = ch_multiqc_files.mix(ch_pipeline_outputs)
 
     MULTIQC (
         ch_multiqc_files.flatten().collect().map { files ->
@@ -157,11 +169,11 @@ workflow PROVENANCEREPORT {
         }
     )
 
-    STAGE_FILE (document_file)
+    STAGE_FILE (ch_document_file)
 
     emit:
-    versions       = ch_versions                                      // channel: [ path(versions.yml) ]
-    reports        = QUARTONOTEBOOK.out.html                          // channel: [ val(meta), path(html) ]
+    versions       = ch_versions                                        // channel: [ path(versions.yml) ]
+    reports        = QUARTONOTEBOOK.out.html                            // channel: [ val(meta), path(html) ]
     multiqc_report = MULTIQC.out.report.map { _meta, report -> report } // channel: path(multiqc_report.html)
     document       = STAGE_FILE.out.staged_file
 }

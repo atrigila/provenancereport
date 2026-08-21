@@ -103,7 +103,7 @@ Use `--document` to attach a review or sign-off file to the run, for example a c
 --document '[path to review document]'
 ```
 
-When set, the pipeline stages this file into the results and adds a "Traceability Document Review" section to the MultiQC report so the run records which review document was supplied. This parameter is optional and does not affect Quarto rendering itself.
+When set, the pipeline stages this file into the results and adds it to the "Pipeline Outputs" table in the MultiQC report so the run records which review document was supplied. This parameter is optional and does not affect Quarto rendering itself.
 
 ## How the pipeline works
 
@@ -113,7 +113,7 @@ The main workflow performs seven steps:
 2. The workflow selects the notebook using `--notebook`, or the bundled `assets/provenance_report.qmd` if `--notebook` is unset.
 3. `QUARTONOTEBOOK` renders one Quarto HTML report using all samplesheet rows. The process receives `[meta, notebook]`, a parameter map, and the actual input files as a plain path channel.
 4. `REPORTENVIRONMENT` runs in the same `--report_container` image as `QUARTONOTEBOOK` and captures its resolved container reference, Quarto version, `R sessionInfo()`, and Python version. Missing R or Python installations are reported as unavailable without failing the run.
-5. If `--document` is set, the workflow adds a traceability-document summary to MultiQC and stages the supplied review file into the published results.
+5. If `--document` is set, the workflow stages the supplied review file into the published results via `STAGE_FILE`.
 6. `MULTIQC` collates the workflow parameters, software versions, runtime-environment information, and Nextflow execution profile.
 7. The workflow publishes the Quarto and MultiQC reports, report artifacts, and standard pipeline metadata under `pipeline_info/`.
 
