@@ -20,6 +20,7 @@
                 "multiqc/multiqc_data/multiqc_citations.txt",
                 "multiqc/multiqc_data/multiqc_data.json",
                 "multiqc/multiqc_data/multiqc_input_samplesheet.txt",
+                "multiqc/multiqc_data/multiqc_pipeline_outputs.txt",
                 "multiqc/multiqc_data/multiqc_software_versions.txt",
                 "multiqc/multiqc_data/multiqc_sources.txt",
                 "multiqc/multiqc_report.html",
@@ -43,7 +44,7 @@
                 "samplesheet_quartonotebook.csv:md5,33cd9804d52f8ff96e2244df29e5cd2a"
             ]
         ],
-        "timestamp": "2026-08-20T15:27:57.097450449",
+        "timestamp": "2026-08-21T21:42:40.735480504",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "26.04.1"
