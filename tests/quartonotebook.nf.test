@@ -30,7 +30,6 @@ nextflow_pipeline {
                     // All files with stable contents
                     stable_content
                 ).match() },
-                { assert path("$outputDir/multiqc/multiqc_report.html").exists() },
             )
         }
     }

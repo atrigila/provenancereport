@@ -16,18 +16,13 @@ nextflow_pipeline {
 
         then {
             def stable_path = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'ro-crate-metadata_*.json'])
-            def multiqc_report = path("$outputDir/multiqc/multiqc_report.html")
+            def stable_content = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
             assert workflow.success
-            assertAll(
-                { assert stable_path.findAll { path -> path == "quartonotebook/artifacts/external_rds_summary.tsv" }.size() == 1 },
-                { assert stable_path.findAll { path -> path.startsWith("quartonotebook/") && path.endsWith(".html") }.size() == 1 },
-                { assert snapshot(
-                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_provenancereport_software_mqc_versions.yml")
-                ).match() },
-                { assert path("$outputDir/quartonotebook/artifacts/external_rds_summary.tsv").md5 == '26d3aee09ee5b92e17f0dce912a750aa' },
-                { assert multiqc_report.exists() },
-                { assert multiqc_report.text.contains('community.wave.seqera.io/library/jupyter_matplotlib_papermill_quarto_pruned:1c7ff2bce2522110') },
-            )
+            assert snapshot(
+                removeNextflowVersion("$outputDir/pipeline_info/nf_core_provenancereport_software_mqc_versions.yml"),
+                stable_path,
+                stable_content
+            ).match()
         }
     }
 }

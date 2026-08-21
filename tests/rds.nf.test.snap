@@ -9,9 +9,47 @@
                 "Workflow": {
                     "nf-core/provenancereport": "v1.0.0dev"
                 }
-            }
+            },
+            [
+                "README.md:md5,675e5d6c3dbc9598e26c801377bae67e",
+                "external_rds_report.qmd",
+                "main.nf:md5,f8cc1568cd9c0105fb6cb26f6be01afd",
+                "md5sum",
+                "md5sum/provenancereport.md5",
+                "multiqc",
+                "multiqc/multiqc_data",
+                "multiqc/multiqc_data/llms-full.txt",
+                "multiqc/multiqc_data/multiqc.log",
+                "multiqc/multiqc_data/multiqc.parquet",
+                "multiqc/multiqc_data/multiqc_citations.txt",
+                "multiqc/multiqc_data/multiqc_data.json",
+                "multiqc/multiqc_data/multiqc_file_checksums_table.txt",
+                "multiqc/multiqc_data/multiqc_input_samplesheet.txt",
+                "multiqc/multiqc_data/multiqc_software_versions.txt",
+                "multiqc/multiqc_data/multiqc_sources.txt",
+                "multiqc/multiqc_report.html",
+                "nextflow.config:md5,ca30b38fd47d441f87eb37e6bea69fcb",
+                "nextflow_schema.json:md5,15848ca0df442211be8fa3c5468062bf",
+                "pipeline_info",
+                "pipeline_info/nf_core_provenancereport_software_mqc_versions.yml",
+                "quartonotebook",
+                "quartonotebook/artifacts",
+                "quartonotebook/artifacts/external_rds_summary.tsv",
+                "quartonotebook/external_rds_report.html",
+                "quartonotebook/external_rds_report.qmd",
+                "samplesheet_rds.csv"
+            ],
+            [
+                "README.md:md5,675e5d6c3dbc9598e26c801377bae67e",
+                "external_rds_report.qmd:md5,33c6e034d026f8d8d619711bec521665",
+                "main.nf:md5,f8cc1568cd9c0105fb6cb26f6be01afd",
+                "nextflow_schema.json:md5,15848ca0df442211be8fa3c5468062bf",
+                "external_rds_summary.tsv:md5,26d3aee09ee5b92e17f0dce912a750aa",
+                "external_rds_report.qmd:md5,33c6e034d026f8d8d619711bec521665",
+                "samplesheet_rds.csv:md5,0fe3beaa1e0944acf1674c7e0e91004f"
+            ]
         ],
-        "timestamp": "2026-08-19T21:05:04.309583871",
+        "timestamp": "2026-08-21T02:25:36.489699515",
         "meta": {
             "nf-test": "0.9.5",
             "nextflow": "25.10.4"
