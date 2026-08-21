@@ -1,0 +1,31 @@
+nextflow_process {
+
+    name "Test Process REPORTENVIRONMENT"
+    script "../main.nf"
+    process "REPORTENVIRONMENT"
+
+    tag "modules"
+    tag "modules_local"
+    tag "reportenvironment"
+
+    test("collect report runtime environment") {
+
+        then {
+            def runtime_environment = process.out.runtime_environment[0]
+            def normalized_environment = [
+                process: runtime_environment[0],
+                container: runtime_environment[1],
+                fields: runtime_environment.size(),
+            ]
+            def r_session_info = runtime_environment[2].trim()
+            def python_version = runtime_environment[3].trim()
+
+            assertAll(
+                { assert process.success },
+                { assert snapshot(normalized_environment).match() },
+                { assert r_session_info == 'Not available' || r_session_info.startsWith('R version') },
+                { assert python_version == 'Not available' || python_version.startsWith('Python ') },
+            )
+        }
+    }
+}

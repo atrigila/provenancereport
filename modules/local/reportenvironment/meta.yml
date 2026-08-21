@@ -1,0 +1,34 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/nf-core/modules/master/modules/meta-schema.json
+name: "reportenvironment"
+description: Collect runtime environment metadata for the generated report
+keywords:
+  - report
+  - provenance
+  - environment
+  - container
+tools:
+  - reportenvironment:
+      description: Collect the report process, container, R session information, and Python version
+      homepage: https://github.com/nf-core/provenancereport
+      documentation: https://nf-co.re/provenancereport
+      licence: ["MIT"]
+      identifier: ""
+input: []
+output:
+  runtime_environment:
+    - - process:
+          type: string
+          description: Fully qualified Nextflow process name
+      - container:
+          type: string
+          description: Container configured for the report process
+      - r_session_info:
+          type: eval
+          description: R session information, or Not available when R is absent
+      - python_version:
+          type: eval
+          description: Python version, or Not available when Python is absent
+authors:
+  - "@antoniasaracco"
+maintainers:
+  - "@antoniasaracco"
