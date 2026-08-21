@@ -56,6 +56,7 @@ Custom notebooks should write secondary output files to `params$artifact_dir`. T
 The MultiQC report is generated with the nf-core `multiqc` module and is configured as a report in `tower.yml`, allowing Seqera Platform to display it in the run Reports tab. It contains:
 
 - The validated input samplesheet and workflow parameter summary.
+- A table listing the rendered Quarto HTML report and, if applicable, the supplied review document together with their published output paths.
 - The exact pipeline launch command and a description of the report-generation steps.
 - The resolved `--report_container` reference shared by `QUARTONOTEBOOK` and `REPORTENVIRONMENT`, the container engine, the active Nextflow profile, `R sessionInfo()` output, and Python version. R and Python are reported as unavailable when they are absent from the report container.
 - Pipeline, Nextflow, and Quarto versions.
