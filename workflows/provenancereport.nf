@@ -73,30 +73,15 @@ workflow PROVENANCEREPORT {
     //
     // Calculate checksums for every samplesheet input and the rendered report
     //
-    def ch_input_checksum_files = ch_samplesheet.map { meta, input_file ->
-        [
-            meta + [
-                checksum_file: input_file.getName(),
-                checksum_type: 'Samplesheet input',
-            ],
-            input_file,
-        ]
-    }
-
-    def ch_report_checksum_files = QUARTONOTEBOOK.out.html.map { meta, report_file ->
-        [
-            meta + [
-                id: "${meta.id}_html",
-                checksum_file: report_file.getName(),
-                checksum_type: 'Quarto report',
-            ],
-            report_file,
-        ]
-    }
+    def ch_checksum_files = ch_samplesheet
+        .map { meta, input_file -> input_file }
+        .mix(QUARTONOTEBOOK.out.html.map { meta, report_file -> report_file })
+        .collect()
+        .map { files -> [[ id: 'provenancereport' ], files] }
 
     MD5SUM (
-        ch_input_checksum_files.mix(ch_report_checksum_files),
-        true,
+        ch_checksum_files,
+        false,
     )
 
     //
@@ -106,6 +91,7 @@ workflow PROVENANCEREPORT {
         .mix(QUARTONOTEBOOK.out.versions_papermill)
         .map { process, tool, version ->
             def trimmed_version = version?.toString()?.trim()
+            // Optional tools may emit an empty eval value; omit them instead of reporting a blank version.
             trimmed_version
                 ? [ process.tokenize(':')[-1], "  ${tool}: ${trimmed_version}" ]
                 : null
@@ -135,16 +121,24 @@ workflow PROVENANCEREPORT {
     )
 
     def ch_file_checksums = MD5SUM.out.checksum
-        .map { meta, checksum_file -> checksumMultiqcRow(meta, checksum_file) }
+        .map { _meta, checksum_file ->
+            def checksum_rows = checksum_file.text.readLines()
+                .findAll { line -> line.trim() }
+                .collect { line ->
+                    def checksum_fields = line.trim().split(/\s+/, 2)
+                    "${checksum_fields[1]}\t${checksum_fields[0]}"
+                }
+                .sort()
+            (["file\tmd5"] + checksum_rows).join('\n')
+        }
         .collectFile(
             name: 'file_checksums_mqc.tsv',
-            sort: true,
             newLine: true,
-            seed: "file\ttype\tmd5\n",
         )
     ch_multiqc_files = ch_multiqc_files.mix(ch_file_checksums)
 
     def ch_summary_params = paramsSummaryMap(workflow, parameters_schema: 'nextflow_schema.json')
+    ch_summary_params.get('Core Nextflow options')?.remove('container')
     def workflow_summary = paramsSummaryMultiqc(ch_summary_params)
         .readLines()
         .findAll { line -> !line.startsWith('description:') && !line.startsWith('section_href:') }
@@ -205,22 +199,6 @@ def escapeHtml(value) {
         .replace('<', '&lt;')
         .replace('>', '&gt;')
         .replace('"', '&quot;')
-}
-
-def quoteTsv(value) {
-    return '"' + (value ?: '').toString().replace('"', '""') + '"'
-}
-
-def checksumMultiqcRow(meta, checksum_file) {
-    def checksum_path = checksum_file instanceof List ? checksum_file.first() : checksum_file
-    def checksum_fields = checksum_path.text.trim().tokenize()
-    def checksum = checksum_fields ? checksum_fields.first() : 'Not available'
-
-    return [
-        quoteTsv(meta.checksum_file),
-        quoteTsv(meta.checksum_type),
-        quoteTsv(checksum),
-    ].join('\t')
 }
 
 def runtimeEnvironmentMultiqc(process_name, container, container_engine, profile, r_session_info, python_version) {
