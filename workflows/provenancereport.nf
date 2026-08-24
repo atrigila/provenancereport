@@ -3,14 +3,16 @@
     IMPORT MODULES / SUBWORKFLOWS / FUNCTIONS
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
-include { paramsSummaryMap       } from 'plugin/nf-schema'
-include { QUARTONOTEBOOK        } from '../modules/nf-core/quartonotebook/main'
-include { REPORTENVIRONMENT     } from '../modules/local/reportenvironment/main'
-include { MD5SUM                } from '../modules/nf-core/md5sum/main'
-include { MULTIQC               } from '../modules/nf-core/multiqc/main'
-include { paramsSummaryMultiqc  } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { softwareVersionsToYAML } from '../subworkflows/nf-core/utils_nfcore_pipeline'
-include { methodsDescriptionText } from '../subworkflows/local/utils_nfcore_provenancereport_pipeline'
+include { paramsSummaryMap                } from 'plugin/nf-schema'
+include { QUARTONOTEBOOK                  } from '../modules/nf-core/quartonotebook/main'
+include { REPORTENVIRONMENT               } from '../modules/local/reportenvironment/main'
+include { STAGE_FILE                      } from '../modules/local/stage_file/main'
+include { MD5SUM                          } from '../modules/nf-core/md5sum/main'
+include { MULTIQC                         } from '../modules/nf-core/multiqc/main'
+include { paramsSummaryMultiqc            } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { softwareVersionsToYAML          } from '../subworkflows/nf-core/utils_nfcore_pipeline'
+include { methodsDescriptionText          } from '../subworkflows/local/utils_nfcore_provenancereport_pipeline'
+include { runtimeEnvironmentMultiqc       } from '../subworkflows/local/utils_nfcore_provenancereport_pipeline'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -28,6 +30,7 @@ workflow PROVENANCEREPORT {
 
     def ch_versions = channel.empty()
     def report_notebook = file(params.notebook ?: "${projectDir}/assets/provenance_report.qmd", checkIfExists: true)
+    ch_document_file = params.document ? file(params.document) : channel.empty()
 
     ch_quarto_input = ch_samplesheet
         .collect(flat: false)
@@ -168,6 +171,31 @@ workflow PROVENANCEREPORT {
         .collectFile(name: 'runtime_environment_mqc.yaml', sort: true)
     ch_multiqc_files = ch_multiqc_files.mix(ch_runtime_environment)
 
+    def ch_pipeline_outputs_rows = QUARTONOTEBOOK.out.html
+        .map { _meta, report ->
+            [
+                file: report.getName(),
+                output_path: "quartonotebook/${report.getName()}",
+            ]
+        }
+    if (params.document) {
+        ch_pipeline_outputs_rows = ch_pipeline_outputs_rows.mix(
+            channel.value(
+                [
+                    file: ch_document_file.getName(),
+                    output_path: ch_document_file.getName(),
+                ]
+            )
+        )
+    }
+    def ch_pipeline_outputs = ch_pipeline_outputs_rows
+        .collect()
+        .map { rows ->
+            (['file\toutput_path'] + rows.collect { row -> "${row.file}\t${row.output_path}" }).join('\n')
+        }
+        .collectFile(name: 'pipeline_outputs_mqc.tsv', newLine: true)
+    ch_multiqc_files = ch_multiqc_files.mix(ch_pipeline_outputs)
+
     MULTIQC (
         ch_multiqc_files.flatten().collect().map { files ->
             [
@@ -181,50 +209,13 @@ workflow PROVENANCEREPORT {
         }
     )
 
+    STAGE_FILE (ch_document_file)
+
     emit:
-    versions       = ch_versions                                      // channel: [ path(versions.yml) ]
-    reports        = QUARTONOTEBOOK.out.html                          // channel: [ val(meta), path(html) ]
+    versions       = ch_versions                                        // channel: [ path(versions.yml) ]
+    reports        = QUARTONOTEBOOK.out.html                            // channel: [ val(meta), path(html) ]
     multiqc_report = MULTIQC.out.report.map { _meta, report -> report } // channel: path(multiqc_report.html)
-}
-
-/*
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    FUNCTIONS
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-*/
-
-def escapeHtml(value) {
-    return (value ?: 'Not available')
-        .replace('&', '&amp;')
-        .replace('<', '&lt;')
-        .replace('>', '&gt;')
-        .replace('"', '&quot;')
-}
-
-def runtimeEnvironmentMultiqc(process_name, container, container_engine, profile, r_session_info, python_version) {
-    def process_text = escapeHtml(process_name)
-    def container_text = escapeHtml(container)
-    def engine_text = escapeHtml(container_engine ?: 'None')
-    def profile_text = escapeHtml(profile ?: 'standard')
-    def r_text = escapeHtml(r_session_info).replace('\n', '\n      ')
-    def python_text = escapeHtml(python_version)
-
-    return """
-    id: 'nf-core-provenancereport-runtime-environment'
-    description: 'Runtime environment used to render the Quarto report.'
-    section_name: 'Report Runtime Environment'
-    plot_type: 'html'
-    data: |
-      <dl class="dl-horizontal">
-        <dt>Process</dt><dd><samp>${process_text}</samp></dd>
-        <dt>Container engine</dt><dd><samp>${engine_text}</samp></dd>
-        <dt>Container</dt><dd><samp>${container_text}</samp></dd>
-        <dt>Nextflow profile</dt><dd><samp>${profile_text}</samp></dd>
-        <dt>Python</dt><dd><samp>${python_text}</samp></dd>
-      </dl>
-      <h4>R sessionInfo()</h4>
-      <pre>${r_text}</pre>
-    """.stripIndent().trim()
+    document       = STAGE_FILE.out.staged_file
 }
 
 /*

@@ -1,0 +1,20 @@
+name: "stage_file"
+description: Stage a user-provided file into the workflow results.
+keywords:
+  - stage
+  - file
+  - utility
+tools: []
+input:
+  - stage_file:
+      type: file
+      description: File to stage into the workflow output directory.
+      pattern: "*"
+      ontologies: []
+output:
+  staged_file:
+    - stage_file:
+        type: file
+        description: The staged copy of the input file.
+        pattern: "*"
+        ontologies: []

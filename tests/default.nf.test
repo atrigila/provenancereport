@@ -17,9 +17,6 @@ nextflow_pipeline {
             def stable_path = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'ro-crate-metadata_*.json'])
             // stable_content: All files in ${params.outdir}/ with stable content
             def stable_content = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
-            def multiqc_report = path("$outputDir/multiqc/multiqc_report.html")
-            def checksum_data = path("$outputDir/multiqc/multiqc_data/multiqc_file_checksums_table.txt")
-            def software_versions = path("$outputDir/pipeline_info/nf_core_provenancereport_software_mqc_versions.yml")
             assert workflow.success
             assertAll(
                 { assert stable_path.findAll { path -> path.startsWith("quartonotebook/") && path.endsWith(".html") }.size() == 1 },
@@ -31,6 +28,37 @@ nextflow_pipeline {
                     // All files with stable contents
                     stable_content
                 ).match() }
+            )
+        }
+    }
+
+    test("-profile test with --document") {
+
+        when {
+            params {
+                outdir = "$outputDir"
+                document = "${projectDir}/tests/assets/review_signoff.md"
+            }
+        }
+
+        then {
+            // stable_path: All files + folders in ${params.outdir}/ with a stable path (including file name)
+            def stable_path = getAllFilesFromDir(params.outdir, relative: true, includeDir: true, ignore: ['pipeline_info/*.{html,json,txt}', 'ro-crate-metadata_*.json'])
+            // stable_content: All files in ${params.outdir}/ with stable content
+            def stable_content = getAllFilesFromDir(params.outdir, ignoreFile: 'tests/.nftignore')
+            def multiqc_report = path("$outputDir/multiqc/multiqc_report.html")
+            assert workflow.success
+            assertAll(
+                { assert stable_path.findAll { path -> path.startsWith("quartonotebook/") && path.endsWith(".html") }.size() == 1 },
+                { assert snapshot(
+                    // pipeline versions.yml file for multiqc from which Nextflow version is removed because we test pipelines on multiple Nextflow versions
+                    removeNextflowVersion("$outputDir/pipeline_info/nf_core_provenancereport_software_mqc_versions.yml"),
+                    // All stable path name, with a relative path
+                    stable_path,
+                    // All files with stable contents
+                    stable_content
+                ).match() },
+                { assert multiqc_report.text.contains('review_signoff.md') },
             )
         }
     }
