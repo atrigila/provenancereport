@@ -11,6 +11,5 @@ process REPORTENVIRONMENT {
 
     script:
     """
-    true
     """
 }
