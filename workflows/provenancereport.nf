@@ -7,6 +7,7 @@ include { paramsSummaryMap                } from 'plugin/nf-schema'
 include { QUARTONOTEBOOK                  } from '../modules/nf-core/quartonotebook/main'
 include { REPORTENVIRONMENT               } from '../modules/local/reportenvironment/main'
 include { STAGE_FILE                      } from '../modules/local/stage_file/main'
+include { MD5SUM                          } from '../modules/nf-core/md5sum/main'
 include { MULTIQC                         } from '../modules/nf-core/multiqc/main'
 include { paramsSummaryMultiqc            } from '../subworkflows/nf-core/utils_nfcore_pipeline'
 include { softwareVersionsToYAML          } from '../subworkflows/nf-core/utils_nfcore_pipeline'
@@ -73,11 +74,30 @@ workflow PROVENANCEREPORT {
     REPORTENVIRONMENT ()
 
     //
+    // Calculate checksums for every samplesheet input and the rendered report
+    //
+    def ch_checksum_files = ch_samplesheet
+        .map { meta, input_file -> input_file }
+        .mix(QUARTONOTEBOOK.out.html.map { meta, report_file -> report_file })
+        .collect()
+        .map { files -> [[ id: 'provenancereport' ], files] }
+
+    MD5SUM (
+        ch_checksum_files,
+        false,
+    )
+
+    //
     // Collate and save software versions
     //
-    def report_environment_versions = REPORTENVIRONMENT.out.versions
-        .map { _process, tool, version ->
-            [ 'QUARTONOTEBOOK', "  ${tool}: ${version}" ]
+    def quartonotebook_versions = QUARTONOTEBOOK.out.versions_quarto
+        .mix(QUARTONOTEBOOK.out.versions_papermill)
+        .map { process, tool, version ->
+            def trimmed_version = version?.toString()?.trim()
+            // Optional tools may emit an empty eval value; omit them instead of reporting a blank version.
+            trimmed_version
+                ? [ process.tokenize(':')[-1], "  ${tool}: ${trimmed_version}" ]
+                : null
         }
         .groupTuple(by:0)
         .map { process, tool_versions ->
@@ -86,7 +106,7 @@ workflow PROVENANCEREPORT {
         }
 
     def ch_collated_versions = softwareVersionsToYAML(ch_versions)
-        .mix(report_environment_versions)
+        .mix(quartonotebook_versions)
         .collectFile(
             storeDir: "${outdir}/pipeline_info",
             name: 'nf_core_'  +  'provenancereport_software_'  + 'mqc_'  + 'versions.yml',
@@ -103,7 +123,25 @@ workflow PROVENANCEREPORT {
         channel.value(file(params.input, checkIfExists: true)).collectFile(name: 'samplesheet.csv')
     )
 
+    def ch_file_checksums = MD5SUM.out.checksum
+        .map { _meta, checksum_file ->
+            def checksum_rows = checksum_file.text.readLines()
+                .findAll { line -> line.trim() }
+                .collect { line ->
+                    def checksum_fields = line.trim().split(/\s+/, 2)
+                    "${checksum_fields[1]}\t${checksum_fields[0]}"
+                }
+                .sort()
+            (["file\tmd5"] + checksum_rows).join('\n')
+        }
+        .collectFile(
+            name: 'file_checksums_mqc.tsv',
+            newLine: true,
+        )
+    ch_multiqc_files = ch_multiqc_files.mix(ch_file_checksums)
+
     def ch_summary_params = paramsSummaryMap(workflow, parameters_schema: 'nextflow_schema.json')
+    ch_summary_params.get('Core Nextflow options')?.remove('container')
     def workflow_summary = paramsSummaryMultiqc(ch_summary_params)
         .readLines()
         .findAll { line -> !line.startsWith('description:') && !line.startsWith('section_href:') }
@@ -132,6 +170,7 @@ workflow PROVENANCEREPORT {
         }
         .collectFile(name: 'runtime_environment_mqc.yaml', sort: true)
     ch_multiqc_files = ch_multiqc_files.mix(ch_runtime_environment)
+
     def ch_pipeline_outputs_rows = QUARTONOTEBOOK.out.html
         .map { _meta, report ->
             [

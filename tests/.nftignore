@@ -4,6 +4,7 @@ nf-prov
 nf-prov/*
 *.html
 **/*.html
+md5sum/*.md5
 multiqc/multiqc_data/*
 ro-crate-metadata_*.json
 nextflow.config

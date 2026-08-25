@@ -29,7 +29,7 @@ nextflow_pipeline {
                     stable_path,
                     // All files with stable contents
                     stable_content
-                ).match() }
+                ).match() },
             )
         }
     }

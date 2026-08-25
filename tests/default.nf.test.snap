@@ -3,6 +3,7 @@
         "content": [
             {
                 "QUARTONOTEBOOK": {
+                    "papermill": "2.6.0",
                     "quarto": "1.7.31"
                 },
                 "Workflow": {
@@ -10,8 +11,10 @@
                 }
             },
             [
-                "README.md:md5,87e7dd005192da3562f03562b9a99ebc",
+                "README.md:md5,675e5d6c3dbc9598e26c801377bae67e",
                 "main.nf:md5,f8cc1568cd9c0105fb6cb26f6be01afd",
+                "md5sum",
+                "md5sum/provenancereport.md5",
                 "multiqc",
                 "multiqc/multiqc_data",
                 "multiqc/multiqc_data/llms-full.txt",
@@ -19,6 +22,7 @@
                 "multiqc/multiqc_data/multiqc.parquet",
                 "multiqc/multiqc_data/multiqc_citations.txt",
                 "multiqc/multiqc_data/multiqc_data.json",
+                "multiqc/multiqc_data/multiqc_file_checksums_table.txt",
                 "multiqc/multiqc_data/multiqc_input_samplesheet.txt",
                 "multiqc/multiqc_data/multiqc_pipeline_outputs.txt",
                 "multiqc/multiqc_data/multiqc_software_versions.txt",
@@ -37,7 +41,7 @@
                 "samplesheet.csv"
             ],
             [
-                "README.md:md5,87e7dd005192da3562f03562b9a99ebc",
+                "README.md:md5,675e5d6c3dbc9598e26c801377bae67e",
                 "main.nf:md5,f8cc1568cd9c0105fb6cb26f6be01afd",
                 "nextflow_schema.json:md5,e7342e15cef1e11bfb50150cf9953a1d",
                 "provenance_report_input_files.tsv:md5,1458dc07273f8a570beae2b5f4358a49",
@@ -46,16 +50,17 @@
                 "samplesheet.csv:md5,760077fbeb3954e468d83244325f4ade"
             ]
         ],
-        "timestamp": "2026-08-21T21:38:41.442153383",
+        "timestamp": "2026-08-24T02:38:31.840623172",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.04.1"
+            "nextflow": "25.10.4"
         }
     },
     "-profile test with --document": {
         "content": [
             {
                 "QUARTONOTEBOOK": {
+                    "papermill": "2.6.0",
                     "quarto": "1.7.31"
                 },
                 "Workflow": {
@@ -63,8 +68,10 @@
                 }
             },
             [
-                "README.md:md5,87e7dd005192da3562f03562b9a99ebc",
+                "README.md:md5,675e5d6c3dbc9598e26c801377bae67e",
                 "main.nf:md5,f8cc1568cd9c0105fb6cb26f6be01afd",
+                "md5sum",
+                "md5sum/provenancereport.md5",
                 "multiqc",
                 "multiqc/multiqc_data",
                 "multiqc/multiqc_data/llms-full.txt",
@@ -72,6 +79,7 @@
                 "multiqc/multiqc_data/multiqc.parquet",
                 "multiqc/multiqc_data/multiqc_citations.txt",
                 "multiqc/multiqc_data/multiqc_data.json",
+                "multiqc/multiqc_data/multiqc_file_checksums_table.txt",
                 "multiqc/multiqc_data/multiqc_input_samplesheet.txt",
                 "multiqc/multiqc_data/multiqc_pipeline_outputs.txt",
                 "multiqc/multiqc_data/multiqc_software_versions.txt",
@@ -91,7 +99,7 @@
                 "samplesheet.csv"
             ],
             [
-                "README.md:md5,87e7dd005192da3562f03562b9a99ebc",
+                "README.md:md5,675e5d6c3dbc9598e26c801377bae67e",
                 "main.nf:md5,f8cc1568cd9c0105fb6cb26f6be01afd",
                 "nextflow_schema.json:md5,e7342e15cef1e11bfb50150cf9953a1d",
                 "provenance_report_input_files.tsv:md5,1458dc07273f8a570beae2b5f4358a49",
@@ -101,10 +109,10 @@
                 "samplesheet.csv:md5,760077fbeb3954e468d83244325f4ade"
             ]
         ],
-        "timestamp": "2026-08-21T21:40:42.624055663",
+        "timestamp": "2026-08-24T02:39:00.477000217",
         "meta": {
             "nf-test": "0.9.5",
-            "nextflow": "26.04.1"
+            "nextflow": "25.10.4"
         }
     }
 }
