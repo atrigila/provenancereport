@@ -14,9 +14,9 @@ tools:
       licence: ["MIT"]
       identifier: ""
 input:
-  - container_engine:
+  - report_container:
       type: string
-      description: Container engine used by the workflow
+      description: Container image used to render the Quarto report
 output:
   multiqc_table:
     - - runtime_environment_mqc.tsv:

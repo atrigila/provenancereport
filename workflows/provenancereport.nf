@@ -22,7 +22,8 @@ include { methodsDescriptionText          } from '../subworkflows/local/utils_nf
 workflow PROVENANCEREPORT {
 
     take:
-    ch_samplesheet // channel: samplesheet read in from --input
+    ch_samplesheet      // channel: samplesheet read in from --input
+    ch_report_container // channel: container image used to render the report
     outdir
 
     main:
@@ -71,7 +72,7 @@ workflow PROVENANCEREPORT {
     )
 
     REPORTENVIRONMENT (
-        workflow.containerEngine ?: 'None'
+        ch_report_container
     )
 
     //

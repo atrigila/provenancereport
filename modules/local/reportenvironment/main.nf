@@ -3,14 +3,11 @@ process REPORTENVIRONMENT {
     label 'process_single'
 
     input:
-    val container_engine
+    val report_container
 
     output:
     path "runtime_environment_mqc.tsv", emit: multiqc_table
     path "r_session_info_mqc.yaml", emit: multiqc_r_session
-
-    when:
-    task.ext.when == null || task.ext.when
 
     script:
     template 'reportenvironment.sh'
@@ -20,8 +17,8 @@ process REPORTENVIRONMENT {
     cat <<-END_MQC > runtime_environment_mqc.tsv
     field\tvalue
     Process\t${task.process}
-    Container engine\t${container_engine ?: 'None'}
-    Container\t${task.container ?: 'Not configured'}
+    Container engine\t${workflow.containerEngine ?: 'None'}
+    Container\t${report_container ?: 'Not configured'}
     Python\tNot available
     END_MQC
 
