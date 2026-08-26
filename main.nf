@@ -77,7 +77,7 @@ workflow {
     //
     NFCORE_PROVENANCEREPORT (
         PIPELINE_INITIALISATION.out.samplesheet,
-        PIPELINE_INITIALISATION.out.report_container,
+        PIPELINE_INITIALISATION.out.report_container
     )
     //
     // SUBWORKFLOW: Run completion tasks
