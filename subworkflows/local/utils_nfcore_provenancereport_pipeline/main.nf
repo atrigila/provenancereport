@@ -165,40 +165,6 @@ workflow PIPELINE_COMPLETION {
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-def escapeHtml(value) {
-    return (value ?: 'Not available')
-        .replace('&', '&amp;')
-        .replace('<', '&lt;')
-        .replace('>', '&gt;')
-        .replace('"', '&quot;')
-}
-
-def runtimeEnvironmentMultiqc(process_name, container, container_engine, profile, r_session_info, python_version) {
-    def process_text = escapeHtml(process_name)
-    def container_text = escapeHtml(container)
-    def engine_text = escapeHtml(container_engine ?: 'None')
-    def profile_text = escapeHtml(profile ?: 'standard')
-    def r_text = escapeHtml(r_session_info).replace('\n', '\n      ')
-    def python_text = escapeHtml(python_version)
-
-    return """
-    id: 'nf-core-provenancereport-runtime-environment'
-    description: 'Runtime environment used to render the Quarto report.'
-    section_name: 'Report Runtime Environment'
-    plot_type: 'html'
-    data: |
-      <dl class="dl-horizontal">
-        <dt>Process</dt><dd><samp>${process_text}</samp></dd>
-        <dt>Container engine</dt><dd><samp>${engine_text}</samp></dd>
-        <dt>Container</dt><dd><samp>${container_text}</samp></dd>
-        <dt>Nextflow profile</dt><dd><samp>${profile_text}</samp></dd>
-        <dt>Python</dt><dd><samp>${python_text}</samp></dd>
-      </dl>
-      <h4>R sessionInfo()</h4>
-      <pre>${r_text}</pre>
-    """.stripIndent().trim()
-}
-
 //
 // Generate methods description for MultiQC
 //

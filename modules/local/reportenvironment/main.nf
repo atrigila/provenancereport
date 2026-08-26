@@ -2,14 +2,38 @@ process REPORTENVIRONMENT {
     tag 'report runtime environment'
     label 'process_single'
 
+    input:
+    val container_engine
+
     output:
-    tuple val("${task.process}"),
-          val("${task.container ?: 'Not configured'}"),
-          eval("if command -v Rscript >/dev/null 2>&1; then Rscript -e 'sessionInfo()' 2>/dev/null || printf 'Not available\\n'; else printf 'Not available\\n'; fi"),
-          eval("if command -v python >/dev/null 2>&1; then python --version 2>&1 || printf 'Not available\\n'; elif command -v python3 >/dev/null 2>&1; then python3 --version 2>&1 || printf 'Not available\\n'; else printf 'Not available\\n'; fi"),
-          emit: runtime_environment
+    path "runtime_environment_mqc.tsv", emit: multiqc_table
+    path "r_session_info_mqc.yaml", emit: multiqc_r_session
+
+    when:
+    task.ext.when == null || task.ext.when
 
     script:
+    template 'reportenvironment.sh'
+
+    stub:
     """
+    cat <<-END_MQC > runtime_environment_mqc.tsv
+    field\tvalue
+    Process\t${task.process}
+    Container engine\t${container_engine ?: 'None'}
+    Container\t${task.container ?: 'Not configured'}
+    Python\tNot available
+    END_MQC
+
+    cat <<-END_MQC > r_session_info_mqc.yaml
+    id: 'nf-core-provenancereport-r-session-info'
+    description: 'Full R sessionInfo() output from the report rendering environment.'
+    section_name: 'R sessionInfo()'
+    plot_type: 'html'
+    data: |
+      <pre style="white-space: pre-wrap; overflow-x: auto; max-height: 32rem;">
+      Not available
+      </pre>
+    END_MQC
     """
 }
