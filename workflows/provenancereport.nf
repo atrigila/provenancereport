@@ -159,8 +159,10 @@ workflow PROVENANCEREPORT {
         ch_methods_description.collectFile(name: 'methods_description_mqc.yaml', sort: true)
     )
 
-    ch_multiqc_files = ch_multiqc_files.mix(REPORTENVIRONMENT.out.multiqc_table)
-    ch_multiqc_files = ch_multiqc_files.mix(REPORTENVIRONMENT.out.multiqc_r_session)
+    ch_multiqc_files = ch_multiqc_files.mix(
+        REPORTENVIRONMENT.out.multiqc_table,
+        REPORTENVIRONMENT.out.multiqc_r_session
+    )
 
     def ch_pipeline_outputs_rows = QUARTONOTEBOOK.out.html
         .map { _meta, report ->
