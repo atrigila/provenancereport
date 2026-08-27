@@ -1,9 +1,11 @@
 process REPORTENVIRONMENT {
     tag 'report runtime environment'
     label 'process_single'
+    container { runtime_backend != 'conda' && runtime_backend != 'none' && runtime_reference != 'Not configured' ? runtime_reference : null }
+    conda { runtime_backend == 'conda' && runtime_conda_prefix != 'Not configured' ? runtime_conda_prefix : runtime_backend == 'conda' && runtime_reference != 'Not configured' ? runtime_reference : null }
 
     input:
-    val report_container
+    tuple val(runtime_process), val(runtime_backend), val(runtime_reference), val(runtime_conda_prefix)
 
     output:
     path "runtime_environment_mqc.tsv", emit: multiqc_table
@@ -17,8 +19,11 @@ process REPORTENVIRONMENT {
     cat <<-END_MQC > runtime_environment_mqc.tsv
     field\tvalue
     Process\t${task.process}
+    Runtime source process\t${runtime_process}
+    Runtime backend\t${runtime_backend}
+    Runtime reference\t${runtime_reference ?: 'Not configured'}
+    Conda environment path\t${runtime_conda_prefix ?: 'Not configured'}
     Container engine\t${workflow.containerEngine ?: 'None'}
-    Container\t${report_container ?: 'Not configured'}
     Python\tNot available
     END_MQC
 

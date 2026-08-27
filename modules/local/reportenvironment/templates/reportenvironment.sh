@@ -25,8 +25,11 @@ write_runtime_environment_table() {
     cat <<-END_MQC > runtime_environment_mqc.tsv
 field\tvalue
 Process\t${task.process}
+Runtime source process\t${runtime_process}
+Runtime backend\t${runtime_backend}
+Runtime reference\t${runtime_reference ?: 'Not configured'}
+Conda environment path\t${runtime_conda_prefix ?: 'Not configured'}
 Container engine\t${workflow.containerEngine ?: 'None'}
-Container\t${report_container ?: 'Not configured'}
 Python\t\${python_version}
 END_MQC
 }
