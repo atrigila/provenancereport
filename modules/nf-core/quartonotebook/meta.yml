@@ -111,13 +111,13 @@ output:
     - - ${task.process}:
           type: string
           description: The name of the process
-      - ${workflow.containerEngine ?: (task.conda ? 'conda' : 'none')}:
+      - "${workflow.containerEngine ?: (task.conda ? 'conda' : 'none')}":
           type: string
           description: The active runtime backend, such as a container engine, `conda`, or `none`
-      - ${workflow.containerEngine ? task.container ?: 'Not configured' : task.conda ?: 'Not configured'}:
+      - "${workflow.containerEngine ? task.container ?: 'Not configured' : task.conda ?: 'Not configured'}":
           type: string
           description: The resolved container image or Conda reference, or `Not configured` when no managed runtime is configured
-      - printf "%s" "${CONDA_PREFIX:-Not configured}":
+      - "printf \"%s\" \"${CONDA_PREFIX:-Not configured}\"":
           type: eval
           description: The activated Conda environment path, or `Not configured` when Conda is not active
   versions_quarto:
