@@ -1,8 +1,22 @@
 process REPORTENVIRONMENT {
     tag 'report runtime environment'
     label 'process_single'
-    container { runtime_backend != 'conda' && runtime_backend != 'none' && runtime_reference != 'Not configured' ? runtime_reference : null }
-    conda { runtime_backend == 'conda' && runtime_conda_prefix != 'Not configured' ? runtime_conda_prefix : runtime_backend == 'conda' && runtime_reference != 'Not configured' ? runtime_reference : null }
+    container {
+        try {
+            runtime_backend != 'conda' && runtime_backend != 'none' && runtime_reference != 'Not configured' ? runtime_reference : null
+        } catch (MissingPropertyException _ignored) {
+            // `nextflow inspect` evaluates directives before process inputs are bound.
+            null
+        }
+    }
+    conda {
+        try {
+            runtime_backend == 'conda' && runtime_conda_prefix != 'Not configured' ? runtime_conda_prefix : runtime_backend == 'conda' && runtime_reference != 'Not configured' ? runtime_reference : null
+        } catch (MissingPropertyException _ignored) {
+            // `nextflow inspect` evaluates directives before process inputs are bound.
+            null
+        }
+    }
 
     input:
     tuple val(runtime_process), val(runtime_backend), val(runtime_reference), val(runtime_conda_prefix)
