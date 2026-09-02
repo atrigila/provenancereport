@@ -28,7 +28,6 @@ Process\t${task.process}
 Runtime source process\t${runtime_process}
 Runtime backend\t${runtime_backend}
 Runtime reference\t${runtime_reference ?: 'Not configured'}
-Conda environment path\t${runtime_conda_prefix ?: 'Not configured'}
 Container engine\t${workflow.containerEngine ?: 'None'}
 Python\t\${python_version}
 END_MQC

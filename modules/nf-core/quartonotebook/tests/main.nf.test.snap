@@ -36,8 +36,7 @@
                     [
                         "QUARTONOTEBOOK",
                         "docker",
-                        "community.wave.seqera.io/library/jupyter_matplotlib_papermill_quarto_r-rmarkdown:6d15193ce3dfc665",
-                        "/opt/conda"
+                        "community.wave.seqera.io/library/jupyter_matplotlib_papermill_quarto_r-rmarkdown:6d15193ce3dfc665"
                     ]
                 ],
                 "6": [
@@ -88,8 +87,7 @@
                     [
                         "QUARTONOTEBOOK",
                         "docker",
-                        "community.wave.seqera.io/library/jupyter_matplotlib_papermill_quarto_r-rmarkdown:6d15193ce3dfc665",
-                        "/opt/conda"
+                        "community.wave.seqera.io/library/jupyter_matplotlib_papermill_quarto_r-rmarkdown:6d15193ce3dfc665"
                     ]
                 ],
                 "versions_papermill": [
@@ -136,8 +134,7 @@
                 [
                     "QUARTONOTEBOOK",
                     "docker",
-                    "community.wave.seqera.io/library/jupyter_matplotlib_papermill_quarto_r-rmarkdown:6d15193ce3dfc665",
-                    "/opt/conda"
+                    "community.wave.seqera.io/library/jupyter_matplotlib_papermill_quarto_r-rmarkdown:6d15193ce3dfc665"
                 ]
             ],
             [
@@ -185,8 +182,7 @@
                 [
                     "QUARTONOTEBOOK",
                     "docker",
-                    "community.wave.seqera.io/library/jupyter_matplotlib_papermill_quarto_r-rmarkdown:6d15193ce3dfc665",
-                    "/opt/conda"
+                    "community.wave.seqera.io/library/jupyter_matplotlib_papermill_quarto_r-rmarkdown:6d15193ce3dfc665"
                 ]
             ],
             [
@@ -234,8 +230,7 @@
                 [
                     "QUARTONOTEBOOK",
                     "docker",
-                    "community.wave.seqera.io/library/jupyter_matplotlib_papermill_quarto_r-rmarkdown:6d15193ce3dfc665",
-                    "/opt/conda"
+                    "community.wave.seqera.io/library/jupyter_matplotlib_papermill_quarto_r-rmarkdown:6d15193ce3dfc665"
                 ]
             ],
             [
@@ -283,8 +278,7 @@
                 [
                     "QUARTONOTEBOOK",
                     "docker",
-                    "community.wave.seqera.io/library/jupyter_matplotlib_papermill_quarto_r-rmarkdown:6d15193ce3dfc665",
-                    "/opt/conda"
+                    "community.wave.seqera.io/library/jupyter_matplotlib_papermill_quarto_r-rmarkdown:6d15193ce3dfc665"
                 ]
             ],
             [
@@ -327,8 +321,7 @@
                 [
                     "QUARTONOTEBOOK",
                     "docker",
-                    "community.wave.seqera.io/library/jupyter_matplotlib_papermill_quarto_r-rmarkdown:6d15193ce3dfc665",
-                    "/opt/conda"
+                    "community.wave.seqera.io/library/jupyter_matplotlib_papermill_quarto_r-rmarkdown:6d15193ce3dfc665"
                 ]
             ],
             [
@@ -376,8 +369,7 @@
                 [
                     "QUARTONOTEBOOK",
                     "docker",
-                    "community.wave.seqera.io/library/jupyter_matplotlib_papermill_quarto_r-rmarkdown:6d15193ce3dfc665",
-                    "/opt/conda"
+                    "community.wave.seqera.io/library/jupyter_matplotlib_papermill_quarto_r-rmarkdown:6d15193ce3dfc665"
                 ]
             ],
             [

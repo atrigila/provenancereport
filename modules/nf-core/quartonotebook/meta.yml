@@ -117,9 +117,6 @@ output:
       - "${workflow.containerEngine ? task.container ?: 'Not configured' : task.conda ?: 'Not configured'}":
           type: string
           description: The resolved container image or Conda reference, or `Not configured` when no managed runtime is configured
-      - "printf \"%s\" \"${CONDA_PREFIX:-Not configured}\"":
-          type: eval
-          description: The activated Conda environment path, or `Not configured` when Conda is not active
   versions_quarto:
     - - ${task.process}:
           type: string
